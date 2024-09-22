@@ -1,1 +1,2 @@
 ansible -i inventory.txt all -m ping
+ansible clients -m ping
