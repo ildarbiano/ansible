@@ -1,0 +1,37 @@
+ilya@ansiblebase:~/github/ansible$ git push
+Username for 'https://github.com': ildarbiano
+Password for 'https://ildarbiano@github.com':
+remote: Support for password authentication was removed on August 13, 2021.
+remote: Please see https://docs.github.com/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls for information on currently recommended modes of authentication.
+fatal: Authentication failed for 'https://github.com/ildarbiano/ansible.git/'
+
+=============================
+
+ilya@ansiblebase:~/github/ansible$ git pull origin main
+From https://github.com/ildarbiano/ansible
+ * branch            main       -> FETCH_HEAD
+hint: You have divergent branches and need to specify how to reconcile them.
+hint: You can do so by running one of the following commands sometime before
+hint: your next pull:
+hint:
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint:
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+
+
+il.v.matveev@yandex.ru
+969i4092
+
+git config --global user.name "ildar"
+git config --global user.email "il.v.matveev@yandex.ru"
+git config --global http.sslVerify True
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+Host github.com
+ HostName github.com
+ IdentityFile ~/.ssh/id_rsa_github
