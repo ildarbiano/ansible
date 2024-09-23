@@ -1,7 +1,12 @@
 [master]
-Master   ansible_host=172.20.10.7  ansible_user=ilya #--используя ssh-key
+Master   ansible_host=172.20.10.7  
+[master:var]
+ansible_user=ilya #--используя ssh-key
+
 
 [clients]
-client1  ansible_host=172.20.10.8  ansible_user=ilya #--используя ssh-key
-client2  ansible_host=172.20.10.9  ansible_user=ilya #--используя ssh-key
-client3  ansible_host=172.20.10.10 ansible_user=ilya #--используя ssh-key
+client1  ansible_host=172.20.10.8
+client2  ansible_host=172.20.10.9
+client3  ansible_host=172.20.10.10
+[clients:var]
+ansible_user=ilya #--используя ssh-key
