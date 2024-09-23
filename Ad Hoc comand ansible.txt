@@ -6,9 +6,12 @@ ansible clients -m shell -a "hostname -I"
 ansible clients -m shell -a "uptime"
 ansible client1 -m setup
 ansible clients -m copy -a "src=privet.from dest=/tmp"
+ansible clients -m copy -a "src=privet.from dest=/home/ilya"
 
 -b --become-user root
-ansible clients -m copy -a "src=privet.from dest=/home" -b
+ilya@ansiblebase:~/github/ansible$ ansible client1 -m shell -a "poweroff" -b
+client1 | FAILED | rc=-1 >>
+Missing sudo password
 "msg": "Missing sudo password"
 
 ansible clients -m shell -a "ls -la /tmp"

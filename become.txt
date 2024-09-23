@@ -1,3 +1,9 @@
+
+Privilege Escalation Options:	control how and which user you become as on target hosts
+Опции повышения привилегий:	контролируйте, как и каким пользователем вы становитесь на целевых хостах
+ -b, --become          run operations with become (does not imply password prompting) запуск операций с помощью become (не подразумевает запроса пароля)
+
+
 ansible_become
 переопределяет become директиву и решает, использовать ли повышение привилегий или нет.
 
