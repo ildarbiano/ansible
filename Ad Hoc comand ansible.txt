@@ -1,12 +1,12 @@
 ansible -i inventory.txt all -m ping
-ansible clients -m ping
+ansible CLIENTS -m ping
 ansible-inventory --list
 ansible-inventory --graph
-ansible clients -m shell -a "hostname -I"
-ansible clients -m shell -a "uptime"
+ansible CLIENTS -m shell -a "hostname -I"
+ansible CLIENTS -m shell -a "uptime"
 ansible client1 -m setup
-ansible clients -m copy -a "src=privet.from dest=/tmp"
-ansible clients -m copy -a "src=privet.from dest=/home/ilya"
+ansible CLIENTS -m copy -a "src=privet.from dest=/tmp"
+ansible CLIENTS -m copy -a "src=privet.from dest=/home/ilya"
 
 -b --become-user root
 ilya@ansiblebase:~/github/ansible$ ansible client1 -m shell -a "poweroff" -b
@@ -14,9 +14,9 @@ client1 | FAILED | rc=-1 >>
 Missing sudo password
 "msg": "Missing sudo password"
 
-ansible clients -m shell -a "ls -la /tmp"
-ansible clients -m shell -a "ls -la /tmp" -vvv		#debuge 
-ansible clients -m file -a "path=/tmp/privet.from state=absent"
+ansible CLIENTS -m shell -a "ls -la /tmp"
+ansible CLIENTS -m shell -a "ls -la /tmp" -vvv		#debuge 
+ansible CLIENTS -m file -a "path=/tmp/privet.from state=absent"
 
 ansible all -m get_url -a "url=http://.... dest=/home/ilya"
 ansible all -m yum -a "name=utilite state=installed" -b
