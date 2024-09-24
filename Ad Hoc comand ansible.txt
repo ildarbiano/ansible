@@ -15,7 +15,22 @@ Missing sudo password
 "msg": "Missing sudo password"
 
 ansible clients -m shell -a "ls -la /tmp"
+ansible clients -m shell -a "ls -la /tmp" -vvv		#debuge 
 ansible clients -m file -a "path=/tmp/privet.from state=absent"
+
+ansible all -m get_url -a "url=http://.... dest=/home/ilya"
+ansible all -m yum -a "name=utilite state=installed" -b
+ansible all -m yum -a "name=utilite state=latest" -b
+ansible all -m yum -a "name=httpd state=latest" -b
+ansible all -m service -a "name=httpd state=started anabled=yes" -b
+ansible all -m yum -a "name=httpd state=removed" -b
+ansible all -m yum -a "name=utilite state=unstalled" -b
+
+ansible client1 -m uri -a "url=http://..... return_content=yes"			curl
+
+ansible doc -l | grep 
+
+
 
 17:10
 

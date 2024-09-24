@@ -1,0 +1,22 @@
+---
+ - fruits:
+    - apple
+    - pine
+    - mango
+ - fruits: ['apple','pine','mango']
+
+ - man:
+   name: ivan
+   weith: 90
+   health: true
+   skills:
+     - worker
+     - cleaner
+     - writer
+ - man: {name:ivan, weith:90, health:true, skills:['worker','cleaner','writer'] }
+   
+
+ - man: [] 
+    
+
+...

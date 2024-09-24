@@ -1,0 +1,2 @@
+ansible_user      :  ilya         #--используя ssh-key
+portition         :  potatto
