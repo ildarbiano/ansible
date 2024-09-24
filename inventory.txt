@@ -1,9 +1,18 @@
 [master]
+<<<<<<< HEAD
 Master   ansible_host=172.20.10.7  
 
+=======
+Master   ansible_host=172.20.10.7	ansible_user=ilya
+>>>>>>> 75d898aabfec9e21446257d744b758c1f0e51dcb
 
 
 [clients]
 client1  ansible_host=172.20.10.8
 client2  ansible_host=172.20.10.9
 client3  ansible_host=172.20.10.10
+<<<<<<< HEAD
+=======
+[clients:vars]
+ansible_user=ilya
+>>>>>>> 75d898aabfec9e21446257d744b758c1f0e51dcb
