@@ -1,3 +1,5 @@
+C:\Users\123\ansible_practice
+
 git remote add origin https://github.com/ildarbiano/ansible.git
 
 git pull origin main
