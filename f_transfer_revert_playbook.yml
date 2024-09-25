@@ -1,0 +1,7 @@
+---
+- name: Откат поставки файла на удалённые сервера
+  hosts: CLIENTS
+
+  tasks: 
+  - name: Удаление  файла с удалённых серверов
+    file: path=/home/ilya/privet.from state=absent
