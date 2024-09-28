@@ -4,4 +4,6 @@
 
   tasks: 
   - name: Удаление  файла с удалённых серверов
-    file: path=/home/ilya/privet.from state=absent
+    file:
+      path:  /home/ilya/privet.from 
+      state: absent

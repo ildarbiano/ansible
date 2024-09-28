@@ -4,4 +4,6 @@
 
   tasks: 
   - name: Копирование файла на удалённые сервера
-    copy: src=privet.from dest=/home/ilya
+    copy: 
+      src:  privet.from
+      dest: /home/ilya
