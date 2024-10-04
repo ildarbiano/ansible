@@ -1,0 +1,12 @@
+[ilya@localhost ~]$ sudo poweroff
+[sudo] пароль для ilya:
+ilya is not in the sudoers file.  This incident will be reported.
+
+[ilya@localhost ~]$ su -
+Пароль:
+[root@localhost ~]# cat /etc/sudoers
+
+[root@localhost ~]# sudo usermod -a -G wheel ilya
+[root@localhost ~]# getent group wheel
+wheel:x:10:ilya
+
