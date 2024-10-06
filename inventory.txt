@@ -5,6 +5,6 @@ master   ansible_host=172.20.10.7
 client_ubuntu  ansible_host=172.20.10.8
 client_rhcent  ansible_host=172.20.10.12
 
-
-
+[RHCent]
+client_rhcent  ansible_host=172.20.10.12
 

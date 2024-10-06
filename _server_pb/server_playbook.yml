@@ -1,9 +1,9 @@
 ---
 
 - name: Install Apache & nothing
-  hosts: CLIENTS
+  hosts: RHCent
 #  remote_user: ilya
-#  become: yes
+  become: yes
 #  become_user: root
 
   tasks:
