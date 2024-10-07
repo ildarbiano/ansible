@@ -1,0 +1,9 @@
+---
+- name: "Проверяем название ОС, версию дистрибутива и релиза"
+  hosts: CLIENTS
+  gather_facts: true
+
+  tasks:
+  - name: "Смотрим версию ОС"
+    debug:
+      msg: "OS:{{ansible_facts.distribution}} release:{{ansible_facts.distribution_release}} version:{{ansible_facts.distribution_version}}"

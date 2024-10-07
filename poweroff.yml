@@ -1,0 +1,12 @@
+---
+
+- name: Остановка серверов
+  hosts: RHCent
+  gather_facts: no
+#  remote_user: ilya
+  become: yes
+  become_user: root
+
+  tasks:
+  - name: Запуск остановки
+    command: /sbin/shutdown -h now
