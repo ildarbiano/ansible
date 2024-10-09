@@ -1,9 +1,8 @@
 ---
 
 - name: Остановка серверов
-  hosts: RHCent
+  hosts: CLIENTS
   gather_facts: no
-#  remote_user: ilya
   become: yes
   become_user: root
 
