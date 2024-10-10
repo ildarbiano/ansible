@@ -1,0 +1,4 @@
+---
+ansible_user      :  ilya         #--используя ssh-key
+portition         :  apple
+ansible_sudo_pass :  123456

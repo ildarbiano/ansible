@@ -7,3 +7,6 @@ client_rhcent  ansible_host=172.20.10.12
 
 [RHCent]
 client_rhcent  ansible_host=172.20.10.12
+
+[UBU]
+client_ubuntu  ansible_host=172.20.10.8
