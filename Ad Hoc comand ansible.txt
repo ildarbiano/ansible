@@ -50,5 +50,12 @@ ansible-playbook ping_playbook.yml
 ansible_become_password
 --extra-vars='ansible_become_pass= XXXXXXX
 
+ansible UBU -m setup 
+ilya@ansible-master:~/github/ansible$ 
+ansible UBU -m setup | grep "ansible_os_family"
+        "ansible_os_family": "Debian",
+
+
+==============
 10-Ansible |||
 развернуть ППО
