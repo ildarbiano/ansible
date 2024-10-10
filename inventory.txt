@@ -8,6 +8,6 @@ client_rhcent  ansible_host=172.20.10.12
 [RHCent]
 client_rhcent  ansible_host=172.20.10.12
 
-[all:vars]
-ansible_sudo_pass=123456
+#[all:vars]
+#ansible_sudo_pass=123456
 

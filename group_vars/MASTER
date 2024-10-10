@@ -1,3 +1,4 @@
 ---
 ansible_user      :  ilya         #--используя ssh-key
 portition         :  potatto
+ansible_sudo_pass :  123456
