@@ -5,5 +5,5 @@
 
   tasks:
   - name: "Смотрим версию ОС"
-    debug:
-      msg: "OS:{{ansible_facts.distribution}} release:{{ansible_facts.distribution_release}} version:{{ansible_facts.distribution_version}}"
+    debug: var=ansible_os_family
+#      msg: "OS:{{ansible_facts.distribution}} release:{{ansible_facts.distribution_release}} version:{{ansible_facts.distribution_version}}"
