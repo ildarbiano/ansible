@@ -1,0 +1,14 @@
+---
+
+- name: Остановка Apache сервера на Debian-Ubuntu
+  hosts: UBU
+  become: yes
+
+  tasks:
+  - name: Диактивация - inactive (dead)- Apache WebServer
+    become_user: root
+    apt:
+      name: apache2
+      state: absent
+
+
