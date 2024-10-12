@@ -1,19 +1,66 @@
 ---
 
 - name: Запуск Apache сервера на Debian-Ubuntu
-  hosts: UBU
+  hosts: CLIENTS
   become: yes
 
+  vars:
+    source_file: ./banner.html
+    destin_file: /var/www/html/index.html
+
   tasks:
-  - name: Инсталяция Apache WebServer
+  - name: IP-address
+    debug:
+      var: ansible_enp0s3.ipv4.address
+
+  - name: Определение с какой системой имеем дело
+    debug:
+      var: ansible_os_family
+
+  - name: Инсталяция Apache WebServer для Debian
     become_user: root
     apt:
       name: apache2
       state: present
+    when: ansible_os_family == "Debian"
 
-  - name: Запуск  WebServer
+  - name: Инсталяция Apache WebServer для RedHat
+    become_user: root
+    yum:
+      name: httpd
+      state: present
+    when: ansible_os_family == "RedHat"
+
+  - name: Загрузка стартовой страницы WebSite на Ubuntu
+    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+    notify: Restart Apache Debian
+
+  - name: Загрузка стартовой страницы WebSite на RHCent
+    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+    notify: Restart Apache RedHat
+
+  - name: Запуск WebServer на Debian
     service: 
       name: apache2
       state: started
       enabled: yes
+    when: ansible_os_family == "Debian"
 
+  - name: Запуск WebServer на RedHat
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_os_family == "RedHat"
+
+
+  handlers:
+  - name: Restart Apache Debian
+    service:
+      name: apache2
+      state: restarted
+
+  - name: Restart Apache RedHat
+    service:
+      name: httpd
+      state: restarted

@@ -1,9 +1,30 @@
 ---
-- name: "Проверяем название ОС, версию дистрибутива и релиза"
-  hosts: CLIENTS
+- name: Анализ параметров клиента
+  hosts: UBU
   gather_facts: true
 
   tasks:
-  - name: "Смотрим версию ОС"
-    debug: var=ansible_os_family
+  - name: Семейство операционной системы
+    debug:
+      var: ansible_os_family
+
+  - name: Название дистрибутива и версия
+    debug:
+      var: ansible_lsb.description
+
+  - name: Имя сервера клиента
+    debug:
+      var: ansible_hostname
+
+  - name: IP-address клиента
+    debug:
+      var: ansible_enp0s3.ipv4.address
+
+  - name: Сбор фактов вместе
+    set_fact:
+      Hostname:   ansible_hostname
+      Realease:   ansible_lsb.description
+      IP-address: ansible_enp0s3.ipv4.address
+
 #      msg: "OS:{{ansible_facts.distribution}} release:{{ansible_facts.distribution_release}} version:{{ansible_facts.distribution_version}}"
+# ansible UBU -m setup #ADHOC command
