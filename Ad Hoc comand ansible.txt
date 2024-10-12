@@ -55,7 +55,13 @@ ilya@ansible-master:~/github/ansible$
 ansible UBU -m setup | grep "ansible_os_family"
         "ansible_os_family": "Debian",
 
+"ansible_nodename": "client-ubuntu",
+        "ansible_os_family": "Debian",
+        "ansible_pkg_mgr": "apt",
+        "ansible_proc_cmdline": 
 
 ==============
-10-Ansible |||
-развернуть ППО
+ansible UBU -m apt -a "name=apache2 state=absent" -b
+sudo systemctl status apache2
+sudo apt-get purge apache2 apache2-utils apache2-bin apache2.2-common
+sudo apt-get autoremove
