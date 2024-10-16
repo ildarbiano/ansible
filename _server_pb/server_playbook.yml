@@ -5,17 +5,17 @@
   become: yes
 
   vars:
-    source_file: ./banner.html
-    destin_file: /var/www/html/index.html
+    source_folder: ./static
+    destin_folder: /var/www/html
 
   tasks:
   - name: IP-address
     debug:
       var: ansible_enp0s3.ipv4.address
 
-  - name: Определение с какой системой имеем дело
-    debug:
-      var: ansible_os_family
+#  - name: Определение с какой системой имеем дело
+#    debug:
+#      var: ansible_os_family
 
   - name: Инсталяция Apache WebServer для Debian
     become_user: root
@@ -32,12 +32,20 @@
     when: ansible_os_family == "RedHat"
 
   - name: Загрузка стартовой страницы WebSite на Ubuntu
-    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
-    notify: Restart Apache Debian
+#    copy: src={{ source_folder }} dest={{ destin_folder }} mode=0555
+    copy: src={{ item }} dest={{ destin_folder }} mode=0555
+    with_fileglob: "{{ source_folder }}/*.*"
+#    notify: Restart Apache Debian
 
   - name: Загрузка стартовой страницы WebSite на RHCent
-    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
-    notify: Restart Apache RedHat
+#    copy: src={{ source_folder }} dest={{ destin_folder }} mode=0555
+    copy: src={{ item }} dest={{ destin_folder }} mode=0555
+    with_fileglob: "{{ source_folder }}/*.*"
+
+#    notify: Restart Apache RedHat
+#    notify:
+#      - Restart Apache Debian
+#      - Restart Apache RedHat
 
   - name: Запуск WebServer на Debian
     service: 
