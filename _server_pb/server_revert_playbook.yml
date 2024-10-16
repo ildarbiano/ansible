@@ -5,10 +5,9 @@
   become: yes
 
   tasks:
-  - name: Определение с какой системой имеем дело
-    debug:
-      var: ansible_os_family
-
+#  - name: Определение с какой системой имеем дело
+#    debug:
+#      var: ansible_os_family
 
 
   - name: Диактивация - inactive (dead)- ApWebSrv на Debian
