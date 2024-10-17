@@ -1,0 +1,26 @@
+---
+
+- name: Остановка Apache сервера на Debian-Ubuntu
+  hosts: CLIENTS
+  become: yes
+
+  tasks:
+#  - name: Определение с какой системой имеем дело
+#    debug:
+#      var: ansible_os_family
+
+
+  - name: Диактивация - inactive (dead)- ApWebSrv на Debian
+    become_user: root
+    apt:
+      name: apache2
+      state: absent
+    when: ansible_os_family == "Debian"
+
+  - name: Диактивация - inactive (dead)- ApWebSrv на RedHat
+    become_user: root
+    yum:
+      name: httpd
+      state: absent
+    when: ansible_os_family == "RedHat"
+
