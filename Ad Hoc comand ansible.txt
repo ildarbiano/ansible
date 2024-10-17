@@ -65,3 +65,8 @@ ansible UBU -m apt -a "name=apache2 state=absent" -b
 sudo systemctl status apache2
 sudo apt-get purge apache2 apache2-utils apache2-bin apache2.2-common
 sudo apt-get autoremove
+==============
+
+
+ilya@ansible-master:~/github/ansible/_roles_book/roles$ ansible-galaxy init deploy_apache_website
+- Role deploy_apache_website was created successfully
