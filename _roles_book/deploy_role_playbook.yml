@@ -1,0 +1,9 @@
+---
+
+- name: Запуск Apache сервера на Debian-Ubuntu
+  hosts: CLIENTS
+  become: yes
+
+
+  roles:
+  - { role: deploy_apache_website, when ansible_system == 'Linux'}
