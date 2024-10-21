@@ -70,3 +70,23 @@ sudo apt-get autoremove
 
 ilya@ansible-master:~/github/ansible/_roles_book/roles$ ansible-galaxy init deploy_apache_website
 - Role deploy_apache_website was created successfully
+ilya@ansible-master:~/github/ansible/_roles_book/roles/deploy_apache_website$ ll
+total 48
+drwxrwxr-x 10 ilya ilya 4096 Oct 17 15:26 ./
+drwxrwxr-x  3 ilya ilya 4096 Oct 17 15:26 ../
+-rw-rw-r--  1 ilya ilya  539 Oct 17 15:26 .travis.yml
+-rw-rw-r--  1 ilya ilya 1328 Oct 17 15:26 README.md
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:42 defaults/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:34 files/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:44 handlers/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:26 meta/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:54 tasks/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:34 templates/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:26 tests/
+drwxrwxr-x  2 ilya ilya 4096 Oct 17 15:26 vars/
+
+EXTRA VARS
+-e
+--extra-vars
+--extra-var
+ilya@ansible-master:~/github/ansible/_roles_book$ ansible-playbook deploy_role_playbook.yml -e "WHAT_GROUP=RHCent"
