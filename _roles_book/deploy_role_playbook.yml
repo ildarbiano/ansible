@@ -1,7 +1,7 @@
 ---
 
 - name: Запуск Apache сервера на Debian-Ubuntu
-  hosts: CLIENTS
+  hosts: "{{ WHAT_GROUP }}"
   become: yes
 
 
