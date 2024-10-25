@@ -1,0 +1,7 @@
+- name: Создание групп
+  group:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nginx
+    - httpserver

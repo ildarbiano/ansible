@@ -1,31 +1,10 @@
 - name: Первоначальная настройка сервера
   hosts: CLIENTS
   become: yes
+  gather_facts: false
 
   tasks:
-    - name: Создание директорий
-      file:
-        path: "/app/{{ item }}"
-        state: directory
-      loop: 
-        - nginx
-        - httpserver
-    
-    - nаme: Создание групп
-      group:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - nginx
-        - httpserver
+  - include_tasks: dirs_create.yml
+  - include_tasks: groups_create.yml
+  - include_tasks: users_create.yml
 
-    - name: Создание пользователей
-      user:
-        name: {{ item.usname }}
-        shell: /bin/bash
-        groups: nginx
-        append: yes
-        home: /home/{{ item.hmdir }}
-      with_items:
-          - { usname: nginx, usname: nginx }
-          - { usname: httpserver, usname: httpserver }

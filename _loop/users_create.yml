@@ -1,0 +1,10 @@
+- name: Создание пользователей
+  user:
+    name: "{{ item.usname }}"
+    shell: /bin/bash
+    groups: nginx, httpserver
+    append: yes
+    home: "/app/{{ item.apdir }}"
+  with_items:
+      - { usname: nginx, apdir: nginx }
+      - { usname: httpserver, apdir: httpserver }

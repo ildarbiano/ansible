@@ -1,0 +1,7 @@
+- name: Создание директорий
+  file:
+    path: "/app/{{ item }}"
+    state: directory
+  loop:
+    - nginx
+    - httpserver
