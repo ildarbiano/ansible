@@ -1,0 +1,16 @@
+---
+- name: Проверка удалённых хостов
+  hosts: CLIENTS
+  gather_facts: false
+
+  tasks:
+  - name: Шаг 1. Проверка наличия директории, и их состав, с записью в переменную
+    ansible.builtin.command: ls /app
+    register: out_result
+    ignore_errors: yes
+  - name: Вывод отработанного шага 1 на экран
+    ansible.builtin.debug: 
+      var: out_result.stdout_lines
+    when: not out_result.failed
+  - ansible.builtin.command: echo "нет директории /app"
+    when: out_result.failed

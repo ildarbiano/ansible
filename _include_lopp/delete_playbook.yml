@@ -1,0 +1,11 @@
+- name: Удаление созданных директорий, групп и пользователей
+  hosts: CLIENTS
+  become: yes
+  gather_facts: false
+  
+
+  tasks:
+  - name: удаление директорий
+    file:
+      path: /app
+      state: absent
