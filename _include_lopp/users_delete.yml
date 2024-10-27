@@ -1,0 +1,15 @@
+- name: Удаление пользователей nginx
+  user:
+    name: nginx
+    state: absent
+    remove: yes
+#    home: "/app/{{ item.apdir }}"
+#  with_items:
+#      - { usname: nginx, apdir: nginx }
+#      - { usname: httpserver, apdir: httpserver }
+
+- name: Удаление пользователей httpserver
+  user:
+    name: httpserver
+    state: absent
+    remove: yes

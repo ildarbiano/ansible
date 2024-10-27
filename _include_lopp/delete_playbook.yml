@@ -2,10 +2,16 @@
   hosts: CLIENTS
   become: yes
   gather_facts: false
-  
+  vars:
+    grp: httpserver
+    usr: httpserver
 
   tasks:
   - name: удаление директорий
     file:
       path: /app
       state: absent
+
+  - include_tasks: users_delete.yml
+  - include_tasks: groups_delete.yml
+

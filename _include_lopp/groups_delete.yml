@@ -1,0 +1,7 @@
+- name: Удаление групп
+  group:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - nginx
+    - httpserver

@@ -1,16 +1,36 @@
 ---
 - name: Проверка удалённых хостов
   hosts: CLIENTS
+  become: yes
   gather_facts: false
+  vars:
+    plc: "/app"
+    grps:
+      - nginx
+      - httpserver
+    user:
+      - nginx
+      - httpserver
+
 
   tasks:
-  - name: Шаг 1. Проверка наличия директории, и их состав, с записью в переменную
-    ansible.builtin.command: ls /app
+  - name: ШАГ 1. Проверка наличия директории, и их состав, с записью в переменную.
+    ansible.builtin.shell: ls "{{ plc }}"
     register: out_result
     ignore_errors: yes
-  - name: Вывод отработанного шага 1 на экран
-    ansible.builtin.debug: 
+  - name: Вывод результата запроса, на шаге 1, на экран.
+    ansible.builtin.debug:
       var: out_result.stdout_lines
-    when: not out_result.failed
-  - ansible.builtin.command: echo "нет директории /app"
-    when: out_result.failed
+    when: out_result.stdout_lines
+  - name: Сообщение об отсутствии запрашиваемой информации.
+    ansible.builtin.debug:
+      msg: "нет запрашиваемой директории {{ plc }}"
+    when: out_result.rc != 0
+
+
+  - name: ШАГ 2. Проверка наличия групп.
+    ansible.builtin.group:
+      name: nginx
+      state: present
+
+  - name: ШАГ 3. Проверка наличия пользователей
