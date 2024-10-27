@@ -1,0 +1,16 @@
+- name: ШАГ 2. Проверка наличия группы "{{ grps  }}"
+  ansible.builtin.shell: cat /etc/group | grep "{{ grps }}"
+  register: grps_result
+  ignore_errors: yes
+- name: Вывод результата запроса о ГРУППЕ "{{ grps  }}"
+  ansible.builtin.debug:
+    var: grps_result.stdout_lines
+  when: grps_result.stdout_lines
+- name: Сообщение об отсутствии запрашиваемой информации.
+  ansible.builtin.debug:
+    msg: "нет запрашиваемой ГРУППЫ {{ grps }}"
+  when: grps_result.rc != 0
+
+#    ansible.builtin.group:
+#      name: nginx
+#      state: present

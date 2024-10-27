@@ -5,32 +5,12 @@
   gather_facts: false
   vars:
     plc: "/app"
-    grps:
-      - nginx
-      - httpserver
-    user:
-      - nginx
-      - httpserver
+    grps: httpserver
+    user: httpserver
 
 
   tasks:
-  - name: ШАГ 1. Проверка наличия директории, и их состав, с записью в переменную.
-    ansible.builtin.shell: ls "{{ plc }}"
-    register: out_result
-    ignore_errors: yes
-  - name: Вывод результата запроса, на шаге 1, на экран.
-    ansible.builtin.debug:
-      var: out_result.stdout_lines
-    when: out_result.stdout_lines
-  - name: Сообщение об отсутствии запрашиваемой информации.
-    ansible.builtin.debug:
-      msg: "нет запрашиваемой директории {{ plc }}"
-    when: out_result.rc != 0
+  - include_tasks: dir_check.yml
+  - include_tasks: groups_check.yml
 
-
-  - name: ШАГ 2. Проверка наличия групп.
-    ansible.builtin.group:
-      name: nginx
-      state: present
-
-  - name: ШАГ 3. Проверка наличия пользователей
+#  - name: ШАГ 3. Проверка наличия пользователей

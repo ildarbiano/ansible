@@ -1,0 +1,12 @@
+- name: ШАГ 1. Проверка наличия директории {{ plc }}, и их состав, с записью в переменную.
+  ansible.builtin.shell: ls "{{ plc }}"
+  register: dir_result
+  ignore_errors: yes
+- name: Вывод результата запроса о ДИРЕКТОРИИ {{ plc  }}
+  ansible.builtin.debug:
+    var: dir_result.stdout_lines
+  when: dir_result.stdout_lines
+- name: Сообщение об отсутствии запрашиваемой информации.
+  ansible.builtin.debug:
+    msg: "нет запрашиваемой ДИРЕКТОРИИ {{ plc }}"
+  when: dir_result.rc != 0
