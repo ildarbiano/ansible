@@ -1,16 +1,33 @@
-- name: ШАГ 2. Проверка наличия группы "{{ grps  }}"
-  ansible.builtin.shell: cat /etc/group | grep "{{ grps }}"
-  register: grps_result
-  ignore_errors: yes
-- name: Вывод результата запроса о ГРУППЕ "{{ grps  }}"
-  ansible.builtin.debug:
-    var: grps_result.stdout_lines
-  when: grps_result.stdout_lines
-- name: Сообщение об отсутствии запрашиваемой информации.
-  ansible.builtin.debug:
-    msg: "нет запрашиваемой ГРУППЫ {{ grps }}"
-  when: grps_result.rc != 0
+#--- bloks: ШАГ 2. Проверка наличия группы httpserver
+  - name: формирование запроса
+    ansible.builtin.shell: cat /etc/group | grep httpserver
+    register: httpserver_result
+    ignore_errors: yes
 
-#    ansible.builtin.group:
-#      name: nginx
-#      state: present
+  - name: Вывод результата запроса о ГРУППЕ httpserver
+    ansible.builtin.debug:
+      var: httpserver_result.stdout_lines
+    when: httpserver_result.stdout_lines
+
+  - name: Сообщение в случае отсутствия группы httpserver
+    ansible.builtin.debug:
+      msg: "нет запрашиваемой ГРУППЫ"
+    when: httpserver_result.rc != 0
+
+
+
+#--- bloks: ШАГ 2. Проверка наличия группы nginx
+  - name: формирование запроса
+    ansible.builtin.shell: cat /etc/group | grep nginx
+    register: nginx_result
+    ignore_errors: yes
+
+  - name: Вывод результата запроса о ГРУППЕ nginx
+    ansible.builtin.debug:
+      var: nginx_result.stdout_lines
+    when: nginx_result.stdout_lines
+
+  - name: Сообщение в случае отсутствия группы nginx
+    ansible.builtin.debug:
+      msg: "нет запрашиваемой ГРУППЫ"
+    when: nginx_result.rc != 0

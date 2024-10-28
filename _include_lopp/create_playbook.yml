@@ -3,11 +3,17 @@
   become: yes
   gather_facts: false
   vars:
-    grps: "httpserver"
-    usrs: "httpserver"
+    grps:
+    - g1: httpserver
+    - g2: nginx
+    usrs:
+    - u1: httpserver
+    - u2: nginx
+#    grps: "httpserver"
+#    usrs: "httpserver"
 
   tasks:
-  - include_tasks: dir_create.yml
   - include_tasks: groups_create.yml
   - include_tasks: users_create.yml
+  - include_tasks: dir_create.yml
 

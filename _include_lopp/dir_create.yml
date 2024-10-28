@@ -1,7 +1,22 @@
-- name: Создание директорий
+- name: Создание директорий APP
   file:
     path: "/app/{{ item }}"
     state: directory
   loop:
     - nginx
     - httpserver
+
+
+- name: Изменение прав на директорию /app/nginx
+  ansible.builtin.file:
+    path: "/app/nginx"
+    owner: nginx
+    group: nginx
+    mode: u+wxr,g-xr,o-x
+
+- name: Изменение прав на директорию /app/httpserver
+  ansible.builtin.file:
+    path: "/app/httpserver"
+    owner: httpserver
+    group: httpserver
+    mode: u+wxr,g-xr,o-x

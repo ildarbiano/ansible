@@ -1,18 +1,15 @@
-#- name: Создание пользователей nginx
-#  user:
-#    name: nginx
-#    shell: /bin/bash
-#    groups: nginx
-#    append: yes
-#    home: "/app/{{ item.apdir }}"
-#  with_items:
-#      - { usname: nginx, apdir: nginx }
-#      - { usname: httpserver, apdir: httpserver }
-
-- name: Создание пользователей {{ usrs }}
+- name: Создание Пользователя "nginx" для Группы "nginx"
   user:
-    name: "{{ usrs }}"
+    name: nginx
     shell: /bin/bash
-    groups: "{{ usrs  }}"
+    groups: nginx
+    append: yes
+    create_home: yes
+
+- name: Создание Пользователя "httpserver" для Группы "httpserver"
+  user:
+    name: httpserver
+    shell: /bin/bash
+    groups: httpserver
     append: yes
     create_home: yes

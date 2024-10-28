@@ -1,4 +1,4 @@
-- name: Создание групп
+- name: Создание ГРУПП пользователей {{ g1  }} и {{ g2 }}
   group:
     name: "{{ item }}"
     state: present
