@@ -12,11 +12,11 @@
     path: "/app/nginx"
     owner: nginx
     group: nginx
-    mode: u+wxr,g-xr,o-x
+    mode: '755'
 
 - name: Изменение прав на директорию /app/httpserver
   ansible.builtin.file:
     path: "/app/httpserver"
     owner: httpserver
     group: httpserver
-    mode: u+wxr,g-xr,o-x
+    mode: '755'
