@@ -1,0 +1,5 @@
+- name: Deploy first for infra
+  hosts: dev
+  become: true
+  roles:
+    - static_ip

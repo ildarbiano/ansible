@@ -1,0 +1,85 @@
+moex_k8s/
+├── ansible.cfg                # твои настройки (inventory, become, host_key_checking)
+├── site.yml                   # точка входа (запускает роли)
+├── inventories/
+│   └── dev/
+│       └── hosts.yml          # твой сервер k8s-t1 (IP 192.168.0.35)
+├── playbooks/                 # (пока можно оставить пустым или положить туда примеры)
+├── roles/                     # сюда будем складывать переиспользуемые куски
+│   ├── base_setup/            # базовая настройка сервера
+│   │   └── tasks/
+│   │       └── main.yml
+│   └── static_ip/            # твоя задача: зафиксировать IP через netplan
+│       ├── tasks/
+│       │   └── main.yml
+│       └── templates/
+│           └── 00-installer-config.yaml.j2
+├── group_vars/
+│   └── dev/
+│       └── vars.yml           # переменные для dev (IP, имена, пути)
+└── host_vars/                 # (можно пока не трогать)
+
+--------Создаём group_vars переменные общие для всей группы dev
+ilya@ansible-master:~/ansible/moex_k8s$ mkdir -p group_vars/dev
+ilya@ansible-master:~/ansible/moex_k8s$ touch group_vars/dev/vars.yml
+#общие для всей группы dev
+server_hostname: k8s-t1
+netmask: 24
+gateway: 192.168.0.1
+dns_servers:
+  - 8.8.8.8
+  - 1.1.1.1
+ssh_port: 22
+
+--------Создаём host_vars для конкретного сервера
+Теперь создадим файл с уникальным IP для k8s
+host_vars — это что именно на них настроить.
+mkdir -p host_vars/k8s
+touch host_vars/k8s/vars.yml
+
+
+--------точка входа (запускает роли)
+touch site.yml
+обращаться к группе dev
+all:
+  children:
+    dev:
+      hosts:
+        k8s:
+          ansible_host: 192.168.0.35
+          ansible_user: ilya
+
+
+--------Подправляем роль static_ip под новый подход
+Так как static_ip теперь берётся из host_vars, а не из group_vars, шаблон роли тоже нужно чуть поправит
+mkdir -p roles/static_ip/templates
+touch roles/static_ip/templates/00-installer-config.yaml.j2
+
+
+--------создать inventory
+Инвентарь (inventories/dev/hosts.yml) — это список машин и как к ним подключиться
+Ansible сначала должен найти хост, чтобы вообще начать с ним работать. Если в инвентаре нет k8s,
+ Ansible даже не полезет в host_vars/k8s/ — он просто не знает, что такой сервер существует.
+mkdir -p inventories/dev
+touch inventories/dev/hosts.yml
+
+-------
+touch ansible.cfg
+[defaults]
+inventory = inventories/dev/hosts.yml
+host_key_checking = False
+ask_pass = True
+become_ask_pass = True
+
+
+============ проверка - подключение =============
+ansible k8s -m ping		если есть  ansible.cfg
+SSH password:
+
+ansible k8s -m ping -i inventories/dev/hosts.yml		если нет  ansible.cfg
+
+
+
+
+
+

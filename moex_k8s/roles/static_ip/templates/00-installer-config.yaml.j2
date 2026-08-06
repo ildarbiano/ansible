@@ -1,0 +1,13 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    {{ interface_name }}:
+      dhcp4: no
+      dhcp6: no
+      addresses: ["{{ static_ip }}/{{ netmask }}"]
+      routes:
+        - to: default
+          via: "{{ gateway }}"
+      nameservers:
+        addresses: {{ dns_servers | to_yaml }}
