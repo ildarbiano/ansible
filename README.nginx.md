@@ -13,14 +13,17 @@ playbooks/02-check-nginx.yml
 ansible k8s -m ping
 # синтаксическая проверка playbook
 ansible-playbook -i inventories/dev/hosts.yml playbooks/01-deploy-nginx.yml --syntax-check
-# запуск play-book
+# запуск playbook
 ansible-playbook -i inventories/dev/hosts.yml playbooks/01-deploy-nginx.yml -v
 ansible-playbook playbooks/01-deploy-nginx.yml -v
-# запуск play-book с .ansible_vault_pass
+# запуск playbook с .ansible_vault_pass
 ansible-playbook \
   playbooks/01-deploy-nginx.yml \
   --vault-password-file ~/.ansible_vault_pass \
   -v
+# запуск через оркестратор sity.yaml
+ansible-playbook site.yml --vault-password-file ~/.ansible_vault_pass
+
 # после успешного запуска, можно проверить:
 # Проверка с ansible-master
 curl http://192.168.0.55/health
