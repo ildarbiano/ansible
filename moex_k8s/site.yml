@@ -1,5 +1,12 @@
+---
 - name: Deploy first for infra
   hosts: dev
   become: true
   roles:
     - static_ip
+
+- name: Deploy Nginx on k8s host
+  import_playbook: playbooks/01-deploy-nginx.yml
+
+- name: Check Nginx status
+  import_playbook: playbooks/02-check-nginx.yml

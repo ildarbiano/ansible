@@ -1,0 +1,156 @@
+---
+- name: Install Docker and dependencies
+  block:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Create directory for nginx config
+  file:
+    path: /opt/nginx
+    state: directory
+    mode: '0755'
+
+- name: Create simple nginx configuration
+  copy:
+    dest: /opt/nginx/nginx.conf
+    content: |
+      server {
+          listen 80;
+          server_name _;
+
+          location / {
+              root /usr/share/nginx/html;
+              index index.html;
+          }
+
+          location /health {
+              access_log off;
+              return 200 "healthy\n";
+              add_header Content-Type text/plain;
+          }
+      }
+    mode: '0644'
+
+- name: Create test index.html
+  copy:
+    dest: /opt/nginx/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>Nginx on k8s host</title>
+          <style>
+              body { font-family: Arial; margin: 50px; text-align: center; }
+              h1 { color: #4CAF50; }
+          </style>
+      </head>
+      <body>
+          <h1>✅ Nginx is running on k8s host!</h1>
+          <p>Host: {{ ansible_default_ipv4.address }}</p>
+          <p>Deployed by Ansible</p>
+          <p><a href="/health">Health check</a></p>
+      </body>
+      </html>
+    mode: '0644'
+
+- name: Stop and remove existing nginx container if exists
+  shell: |
+    docker stop nginx 2>/dev/null || true
+    docker rm nginx 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run nginx container
+  shell: |
+    docker run -d \
+      --name nginx \
+      --restart unless-stopped \
+      -p 80:80 \
+      -v /opt/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+      -v /opt/nginx/index.html:/usr/share/nginx/html/index.html:ro \
+      nginx:1.25-alpine
+  register: docker_run
+  changed_when: docker_run.rc == 0
+
+- name: Wait for nginx to be ready
+  wait_for:
+    port: 80
+    delay: 5
+    timeout: 30
+    host: "{{ ansible_default_ipv4.address }}"
+
+- name: Test nginx health endpoint
+  uri:
+    url: "http://{{ ansible_default_ipv4.address }}/health"
+    return_content: yes
+    status_code: 200
+  register: health_check
+
+- name: Display health check result
+  debug:
+    msg: "Nginx health check: {{ health_check.content }}"
+
+- name: Display nginx status
+  debug:
+    msg: |
+      ========================================
+      ✅ Nginx successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      🌐 URL:  http://{{ ansible_default_ipv4.address }}
+      🏥 Health: http://{{ ansible_default_ipv4.address }}/health
+
+      Test commands:
+      curl http://{{ ansible_default_ipv4.address }}/
+      curl http://{{ ansible_default_ipv4.address }}/health
+      ========================================
+
+- name: Save connection info
+  copy:
+    content: |
+      Nginx deployed on k8s host
+      Host: {{ ansible_default_ipv4.address }}
+      URL: http://{{ ansible_default_ipv4.address }}
+      Health: http://{{ ansible_default_ipv4.address }}/health
+    dest: /opt/nginx/nginx-info.txt
+    mode: '0644'

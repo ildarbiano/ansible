@@ -73,13 +73,13 @@ become_ask_pass = True
 
 
 ============ проверка - подключение =============
-ansible k8s -m ping		если есть  ansible.cfg
+ansible k8s -m ping						если есть  ansible.cfg
 SSH password:
-
+ilya@ansible-master:~/ansible/moex_k8s$ ansible all -m ping	все
 ansible k8s -m ping -i inventories/dev/hosts.yml		если нет  ansible.cfg
-=================================================
 
--------настройка и изменения после подключения по ssh
+
+=========== настройка и изменения после подключения по ssh
 ssh-copy-id -i ~/.ssh/id_rsa ilya@192.168.0.55
 ssh -i ~/.ssh/id_rsa ilya@192.168.0.55
 
@@ -90,7 +90,25 @@ host_key_checking = False
 private_key_file = ~/.ssh/id_rsa
 # ask_pass = True
 # become_ask_pass = True
+# потом ещё добавил путь до директории role
 
+=========== настройка шифрования пароля root:
+# Шифрование (вам нужно будет ввести пароль для шифрования)
+ansible-vault encrypt group_vars/dev/vault.yml
+New Vault password: 123456
+Confirm New Vault password: 123456
+
+---------- пароль для ansible
+# чтобы не вводить при запуске ansible
+# Новый пароль
+echo "новый_пароль" > ~/.ansible_vault_pass
+chmod 600 ~/.ansible_vault_pass
+----
+# расшифровка для проверки
+# Расшифровываем для проверки (временно)
+ansible-vault decrypt group_vars/dev/vault.yml --vault-password-file ~/.ansible_vault_pass
+# Проверяем содержимое
+cat group_vars/dev/vault.yml
 
 
 

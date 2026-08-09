@@ -1,0 +1,49 @@
+---
+- name: Check Nginx status on k8s host
+  hosts: k8s
+  become: yes
+  gather_facts: yes
+  vars_files:
+  - ../group_vars/dev/vault.yml
+
+  tasks:
+    - name: Check if nginx container is running
+      shell: docker ps --filter "name=nginx" --format "{{ '{{' }}.Status{{ '}}' }}"
+      register: container_status
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Display container status
+      debug:
+        msg: "Nginx container status: {{ container_status.stdout | default('NOT RUNNING') }}"
+
+    - name: Check health endpoint
+      uri:
+        url: "http://{{ ansible_default_ipv4.address }}/health"
+        return_content: yes
+        status_code: 200
+      register: health_check
+      ignore_errors: yes
+
+    - name: Display health
+      debug:
+        msg: "Health check: {{ health_check.content | default('FAILED') }}"
+
+    - name: Check index page
+      uri:
+        url: "http://{{ ansible_default_ipv4.address }}/"
+        status_code: 200
+      register: index_page
+      ignore_errors: yes
+
+    - name: Final verification
+      debug:
+        msg: |
+          ========================================
+          ✅ Nginx verification completed!
+          ========================================
+          🟢 Container: {{ container_status.stdout | default('NOT RUNNING') }}
+          🟢 Health: {{ health_check.content | default('FAILED') }}
+          🟢 Page: HTTP {{ index_page.status | default('FAILED') }}
+          URL: http://{{ ansible_default_ipv4.address }}
+          ========================================

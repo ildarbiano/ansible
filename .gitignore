@@ -1,0 +1,2 @@
+moex_k8s/group_vars/dev/vault.yml
+*.vault
