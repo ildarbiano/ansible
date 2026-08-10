@@ -1,0 +1,10 @@
+---
+- name: Deploy PostgreSQL on pgs host
+  hosts: pgs
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - postgres

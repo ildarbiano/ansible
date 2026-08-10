@@ -1,0 +1,65 @@
+---
+- name: Check connectivity between k8s and pgs
+  hosts: k8s
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  tasks:
+    # 1. Явно загружаем переменные с хоста pgs в память
+    - name: Include host vars from pgs
+      include_vars:
+        file: "{{ playbook_dir }}/../host_vars/pgs/vars.yml"
+        name: pgs_vars
+
+    # 2. Забираем факты с pgs, чтобы узнать его IP
+    - name: Gather facts from pgs host
+      setup:
+      delegate_to: pgs
+      delegate_facts: yes
+      run_once: yes
+
+    # 3. Собираем все данные в удобные переменные для текущего хоста
+    - name: Set pgs connection facts
+      set_fact:
+        pgs_ip: "{{ hostvars['pgs']['ansible_default_ipv4']['address'] }}"
+        pgs_user: "{{ pgs_vars.postgres_user }}"
+        pgs_db: "{{ pgs_vars.postgres_db }}"
+        pgs_port: "{{ pgs_vars.postgres_port }}"
+
+    - name: Install postgresql-client on k8s
+      apt:
+        name: postgresql-client
+        state: present
+
+    - name: Test PostgreSQL connection from k8s to pgs
+      shell: |
+        PGPASSWORD={{ vault_postgres_password }} psql \
+          -h {{ pgs_ip }} \
+          -p 5434 \
+          -U {{ pgs_user }} \
+          -d {{ pgs_db }} \
+          -c "SELECT 'Connection successful!' as status;"
+      register: pg_test
+      ignore_errors: yes
+
+    - name: Display connection test result
+      debug:
+        msg: "{{ pg_test.stdout_lines }}"
+
+    - name: Final connectivity summary
+      debug:
+        msg: |
+          ========================================
+          ✅ Connectivity Verified!
+          ========================================
+          📍 k8s Host: {{ ansible_default_ipv4.address }}
+          📍 pgs Host: {{ pgs_ip }}
+          🔗 PostgreSQL: Port 5434
+          🗄️ Database: {{ pgs_db }}
+          👤 User: {{ pgs_user }}
+
+          Connection test result:
+          {{ pg_test.stdout | default('FAILED') }}
+          ========================================

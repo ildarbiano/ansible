@@ -1,0 +1,127 @@
+---
+- name: Install Docker and dependencies (if not present)
+  block:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Create directories for PostgreSQL data
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /opt/postgres/data
+    - /opt/postgres/init
+
+- name: Create init SQL script (create database and user)
+  copy:
+    dest: /opt/postgres/init/init-db.sql
+    content: |
+      CREATE USER {{ postgres_user }} WITH PASSWORD '{{ postgres_password }}';
+      CREATE DATABASE {{ postgres_db }} OWNER {{ postgres_user }};
+      GRANT ALL PRIVILEGES ON DATABASE {{ postgres_db }} TO {{ postgres_user }};
+    mode: '0644'
+
+- name: Stop and remove existing postgres container if exists
+  shell: |
+    docker stop postgres 2>/dev/null || true
+    docker rm postgres 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run PostgreSQL container on port 5434
+  shell: |
+    docker run -d \
+      --name postgres \
+      --restart unless-stopped \
+      -p 5434:5432 \
+      -e POSTGRES_PASSWORD={{ postgres_password }} \
+      -e POSTGRES_USER={{ postgres_user }} \
+      -e POSTGRES_DB={{ postgres_db }} \
+      -v /opt/postgres/data:/var/lib/postgresql/data \
+      -v /opt/postgres/init:/docker-entrypoint-initdb.d \
+      postgres:15-alpine
+  register: docker_run
+  changed_when: docker_run.rc == 0
+
+- name: Wait for PostgreSQL to be ready
+  wait_for:
+    port: 5434
+    delay: 10
+    timeout: 60
+    host: "{{ ansible_default_ipv4.address }}"
+
+- name: Test database connection
+  shell: |
+    docker exec postgres psql -U {{ postgres_user }} -d {{ postgres_db }} -c "SELECT 1;"
+  register: test_result
+  changed_when: false
+
+- name: Display PostgreSQL status
+  debug:
+    msg: |
+      ========================================
+      ✅ PostgreSQL successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      🗄️ Database: {{ postgres_db }}
+      👤 User: {{ postgres_user }}
+      🔑 Password: {{ postgres_password }}
+      🔌 Port: 5434
+      
+      Connection string:
+      postgres://{{ postgres_user }}:{{ postgres_password }}@{{ ansible_default_ipv4.address }}:5434/{{ postgres_db }}
+      ========================================
+
+- name: Save connection info
+  copy:
+    content: |
+      PostgreSQL deployed on pgs host
+      Host: {{ ansible_default_ipv4.address }}
+      Database: {{ postgres_db }}
+      User: {{ postgres_user }}
+      Password: {{ postgres_password }}
+      Port: 5434
+      Connection: postgres://{{ postgres_user }}:{{ postgres_password }}@{{ ansible_default_ipv4.address }}:5433/{{ postgres_db }}
+    dest: /opt/postgres/postgres-info.txt
+    mode: '0644'
