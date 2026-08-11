@@ -1,4 +1,3 @@
-
 cd ~/ansible/moex_k8s
 mkdir -p roles/postgres/{tasks,templates,handlers,vars}
 cat > roles/postgres/tasks/main.yml << 'EOF'
@@ -41,3 +40,10 @@ EOF
 # запуск
 ansible-playbook playbooks/postgres-check-connect-throw-k8s.yml \
 --vault-password-file ~/.ansible_vault_pass -v
+
+
+======== УПРАВЛЕНИЕ И НАСТРОЙКА БД:
+sudo cat /opt/postgres/init/init-db.sql
+CREATE USER ilya-ansible WITH PASSWORD '654321';
+CREATE DATABASE dtbase_1 OWNER ilya-ansible;
+GRANT ALL PRIVILEGES ON DATABASE dtbase_1 TO ilya-ansible;
