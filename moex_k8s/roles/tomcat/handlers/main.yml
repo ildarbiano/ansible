@@ -1,0 +1,4 @@
+---
+- name: restart tomcat
+  shell: docker restart tomcat
+  ignore_errors: yes

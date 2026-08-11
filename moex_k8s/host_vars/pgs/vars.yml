@@ -1,8 +1,19 @@
+# Параметры подключения к контейнеру, хосту и базам данных
 static_ip: 192.168.0.66
 interface_name: enp0s3
-
-# PostgreSQL settings for pgs host
 postgres_user: "ilya-ansible"
-postgres_db: "dtbase_1"
 postgres_port: 5434
 
+# Имя базы данных при инициализации проекта. Основная пользовательская
+# есть ещё основная системная: postgres
+postgres_db: "dtbase_1"
+
+# Дополнительные базы данных
+postgres_additional_dbs:
+  - base_2
+  - dtbase_logs
+
+# Базы для удаления (явный список)
+#postgres_dbs_to_delete: []
+postgres_dbs_to_delete: [base_2]
+#postgres_dbs_to_delete: [base_2, test_db]

@@ -1,0 +1,28 @@
+---
+- name: Clean up unwanted packages
+  hosts: all
+  become: true                # <-- обязательно!
+  become_method: sudo
+  become_user: root          # <-- явно говорим, что хотим стать root
+
+
+  vars:
+    unwanted_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - nginx
+      - apache2
+      # добавь сюда всё, что хочешь гарантированно удалить
+
+  tasks:
+    - name: Remove unwanted packages
+      apt:
+        name: "{{ unwanted_packages }}"
+        state: absent
+        autoremove: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Clean apt cache
+      command: apt clean
+      changed_when: false

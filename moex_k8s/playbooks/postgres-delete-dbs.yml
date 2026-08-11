@@ -1,0 +1,54 @@
+---
+- name: Delete PostgreSQL databases (explicit list)
+  hosts: pgs
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+    - ../host_vars/pgs/vars.yml
+
+  tasks:
+    - name: Show databases to be deleted
+      debug:
+        msg: "⚠️ Will delete databases: {{ postgres_dbs_to_delete | default([]) }}"
+
+    - name: Confirm deletion (dry-run mode)
+      debug:
+        msg: "🚨 DRY-RUN: Would delete database {{ item }}"
+      loop: "{{ postgres_dbs_to_delete | default([]) }}"
+      when: postgres_dbs_to_delete is defined and postgres_dbs_to_delete | length > 0
+
+    - name: Actually delete databases (if dry-run is false)
+      shell: |
+        docker exec postgres psql -U {{ postgres_user }} -d postgres -c "DROP DATABASE IF EXISTS {{ item }};"
+      loop: "{{ postgres_dbs_to_delete | default([]) }}"
+      register: delete_results
+      when: 
+        - postgres_dbs_to_delete is defined 
+        - postgres_dbs_to_delete | length > 0
+        - not (postgres_dry_run | default(true) | bool)
+
+    - name: Show deletion results
+      debug:
+        msg: "✅ Deleted database: {{ item.item }}"
+      loop: "{{ delete_results.results | default([]) }}"
+      when: 
+        - postgres_dbs_to_delete is defined 
+        - postgres_dbs_to_delete | length > 0
+        - not (postgres_dry_run | default(true) | bool)
+        - item.changed | default(false)
+
+    - name: Skip deletion (no databases to delete)
+      debug:
+        msg: "✅ No databases to delete (list is empty)"
+      when: postgres_dbs_to_delete is not defined or postgres_dbs_to_delete | length == 0
+
+    - name: List all databases after deletion
+      shell: |
+        docker exec postgres psql -U {{ postgres_user }} -d postgres -c "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;"
+      register: list_dbs
+      changed_when: false
+
+    - name: Show remaining databases
+      debug:
+        msg: "📊 Remaining databases: {{ list_dbs.stdout_lines }}"

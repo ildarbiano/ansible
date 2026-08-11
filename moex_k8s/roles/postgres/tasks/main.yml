@@ -54,13 +54,11 @@
     - /opt/postgres/init
 
 - name: Create init SQL script (create database and user)
-  copy:
+  template:
+    src: init-db.sql.j2
     dest: /opt/postgres/init/init-db.sql
-    content: |
-      CREATE USER {{ postgres_user }} WITH PASSWORD '{{ postgres_password }}';
-      CREATE DATABASE {{ postgres_db }} OWNER {{ postgres_user }};
-      GRANT ALL PRIVILEGES ON DATABASE {{ postgres_db }} TO {{ postgres_user }};
     mode: '0644'
+
 
 - name: Stop and remove existing postgres container if exists
   shell: |

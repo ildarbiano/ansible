@@ -1,0 +1,33 @@
+---
+- name: Manage PostgreSQL databases
+  hosts: pgs
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+    - ../host_vars/pgs/vars.yml
+
+  tasks:
+    - name: Create databases from list
+      shell: |
+        docker exec postgres psql -U {{ postgres_user }} -d postgres -c "CREATE DATABASE {{ item }} OWNER \"{{ postgres_user }}\";"
+      loop: "{{ postgres_additional_dbs | default([]) }}"
+      register: create_results
+      ignore_errors: yes
+      changed_when: create_results.rc == 0
+
+    - name: Show created databases
+      debug:
+        msg: "✅ Created/checked database: {{ item.item }}"
+      loop: "{{ create_results.results }}"
+      when: item.changed
+
+    - name: List all databases
+      shell: |
+        docker exec postgres psql -U {{ postgres_user }} -d postgres -c "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;"
+      register: list_dbs
+      changed_when: false
+
+    - name: Show all databases
+      debug:
+        msg: "📊 Existing databases: {{ list_dbs.stdout_lines }}"

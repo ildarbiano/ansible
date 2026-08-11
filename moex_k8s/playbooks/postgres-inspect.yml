@@ -1,0 +1,42 @@
+---
+- name: Inspect PostgreSQL databases and schemas
+  hosts: pgs
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+    - ../host_vars/pgs/vars.yml
+
+  tasks:
+    - name: Get list of all databases
+      shell: |
+        docker exec postgres psql -U {{ postgres_user }} -d postgres -t -c "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;"
+      register: databases
+      changed_when: false
+
+    - name: Display all databases
+      debug:
+        msg: "Found databases: {{ databases.stdout_lines }}"
+
+    - name: Get list of tables and columns for each database
+      shell: |
+        docker exec postgres psql -U {{ postgres_user }} -d {{ item }} -c "
+          SELECT 
+            table_name, 
+            column_name, 
+            data_type, 
+            is_nullable 
+          FROM information_schema.columns 
+          WHERE table_schema = 'public' 
+          ORDER BY table_name, ordinal_position;
+        "
+      loop: "{{ databases.stdout_lines }}"
+      register: schema_info
+      ignore_errors: yes
+      when: databases.stdout_lines | length > 0
+
+    - name: Display schema for each database
+      debug:
+        msg: "{{ item.stdout_lines }}"
+      loop: "{{ schema_info.results }}"
+      when: item.stdout_lines is defined and item.stdout_lines | length > 0

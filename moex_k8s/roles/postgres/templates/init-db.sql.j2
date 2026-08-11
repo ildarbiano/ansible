@@ -1,0 +1,28 @@
+-- ============================================
+-- DDL: Create user and database
+-- ============================================
+CREATE USER {{ postgres_user }} WITH PASSWORD '{{ postgres_password }}';
+CREATE DATABASE {{ postgres_db }} OWNER {{ postgres_user }};
+GRANT ALL PRIVILEGES ON DATABASE {{ postgres_db }} TO {{ postgres_user }};
+
+-- ============================================
+-- DDL: Connect to the target database
+-- ============================================
+\c {{ postgres_db }};
+
+-- ============================================
+-- DDL: Create rates table (managed by Ansible)
+-- ============================================
+CREATE TABLE IF NOT EXISTS rates (
+    id SERIAL PRIMARY KEY,
+    pair VARCHAR(10) NOT NULL,
+    rate DECIMAL(15, 6) NOT NULL,
+    timestamp TIMESTAMP DEFAULT NOW()
+);
+
+-- Index for faster queries
+CREATE INDEX IF NOT EXISTS idx_rates_pair_timestamp ON rates(pair, timestamp DESC);
+
+-- Grant privileges to application user
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {{ postgres_user }};
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO {{ postgres_user }};

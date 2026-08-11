@@ -1,0 +1,86 @@
+---
+- name: Create directories for Tomcat
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /opt/tomcat
+    - /opt/tomcat/webapps
+    - /opt/tomcat/webapps/ROOT
+    - /opt/tomcat/logs
+    - /opt/tomcat/conf
+
+- name: Create test index.html for Tomcat
+  copy:
+    dest: /opt/tomcat/webapps/ROOT/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head><title>Tomcat on k8s</title></head>
+      <body>
+          <h1>✅ Tomcat is running on k8s host!</h1>
+          <p>Host: {{ ansible_default_ipv4.address }}</p>
+          <p>Deployed by Ansible</p>
+      </body>
+      </html>
+    mode: '0644'
+  notify: restart tomcat
+
+- name: Stop and remove existing Tomcat container if exists
+  shell: |
+    docker stop tomcat 2>/dev/null || true
+    docker rm tomcat 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run Tomcat container
+  shell: |
+    docker run -d \
+      --name tomcat \
+      --restart unless-stopped \
+      -p 8080:8080 \
+      -v /opt/tomcat/webapps:/usr/local/tomcat/webapps \
+      -v /opt/tomcat/logs:/usr/local/tomcat/logs \
+      tomcat:9-jdk17
+  register: docker_run
+  changed_when: docker_run.rc == 0
+
+- name: Wait for Tomcat to be ready
+  wait_for:
+    port: 8080
+    delay: 10
+    timeout: 120
+    host: "{{ ansible_default_ipv4.address }}"
+
+- name: Test Tomcat health
+  uri:
+    url: "http://{{ ansible_default_ipv4.address }}:8080"
+    status_code: 200
+  register: tomcat_test
+  ignore_errors: yes
+
+- name: Display Tomcat status
+  debug:
+    msg: |
+      ========================================
+      ✅ Tomcat successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      🔌 Port: 8080
+      📁 Webapps: /opt/tomcat/webapps
+      📋 Logs: /opt/tomcat/logs
+
+      Test commands:
+      curl http://{{ ansible_default_ipv4.address }}:8080
+      docker logs tomcat
+      ========================================
+
+- name: Save connection info
+  copy:
+    content: |
+      Tomcat deployed on k8s host
+      Host: {{ ansible_default_ipv4.address }}
+      URL: http://{{ ansible_default_ipv4.address }}:8080
+    dest: /opt/tomcat/tomcat-info.txt
+    mode: '0644'

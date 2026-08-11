@@ -1,0 +1,49 @@
+server {
+    listen 80;
+    server_name _;
+
+    # Health check
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Static files
+    location / {
+        root /usr/share/nginx/html;
+        try_files $uri $uri/ /index.html;
+        expires 1h;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # API Gateway → Tomcat
+    location /api/ {
+        proxy_pass http://{{ ansible_default_ipv4.address }}:8080/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503;
+        proxy_next_upstream_tries 3;
+    }
+
+    # Actuator
+    location /actuator/ {
+        proxy_pass http://{{ ansible_default_ipv4.address }}:8080/actuator/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        allow 192.168.0.0/16;
+        allow 10.0.0.0/8;
+        allow 172.16.0.0/12;
+        deny all;
+    }
+}

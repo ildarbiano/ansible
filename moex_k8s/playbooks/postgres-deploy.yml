@@ -5,6 +5,10 @@
   gather_facts: yes
   vars_files:
     - ../group_vars/dev/vault.yml
+    - ../host_vars/pgs/vars.yml
+
+  vars:
+    postgres_password: "{{ vault_postgres_password }}"
 
   roles:
     - postgres
