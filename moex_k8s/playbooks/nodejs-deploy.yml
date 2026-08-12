@@ -1,0 +1,10 @@
+---
+- name: Deploy Node.js on k8s host
+  hosts: k8s
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - nodejs

@@ -1,0 +1,173 @@
+const express = require('express');
+const cors = require('cors');
+const { exec } = require('child_process');
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
+
+const app = express();
+const PORT = process.env.PORT || {{ nodejs_port }};
+const ANSIBLE_DIR = process.env.ANSIBLE_PLAYBOOK_DIR || '/ansible';
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Logging
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`${req.method} ${req.url} ${res.statusCode} ${duration}ms`);
+    });
+    next();
+});
+
+// Состояние нагрузки
+let loadState = {
+    getRate: {{ default_get_rate | default(10) }},
+    postRate: {{ default_post_rate | default(5) }},
+    timeout: {{ default_timeout | default(5000) }},
+    workers: {{ default_workers | default(4) }}
+};
+
+// Метрики
+let metrics = {
+    totalRequests: 0,
+    avgResponseTime: 0,
+    errorRate: 0,
+    currentRps: 0,
+    cpu: 0,
+    memory: 0,
+    uptime: 0
+};
+
+// Health check
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        version: '{{ nodejs_version }}',
+        loadState: loadState
+    });
+});
+
+// Get load state
+app.get('/api/load-state', (req, res) => {
+    res.json({
+        success: true,
+        state: loadState,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Update load
+app.post('/api/update-load', async (req, res) => {
+    try {
+        const { getRate, postRate, timeout, workers } = req.body;
+        
+        if (getRate !== undefined) loadState.getRate = parseInt(getRate) || 0;
+        if (postRate !== undefined) loadState.postRate = parseInt(postRate) || 0;
+        if (timeout !== undefined) loadState.timeout = parseInt(timeout) || 1000;
+        if (workers !== undefined) loadState.workers = parseInt(workers) || 1;
+        
+        console.log('🔄 Updating load config:', loadState);
+        
+        const playbookPath = path.join(ANSIBLE_DIR, 'playbooks/update-load.yml');
+        const inventoryPath = path.join(ANSIBLE_DIR, 'inventories/dev/hosts.yml');
+        
+        if (fs.existsSync(playbookPath)) {
+            const cmd = `ansible-playbook ${playbookPath} \
+                         -e "get_rate=${loadState.getRate} post_rate=${loadState.postRate} timeout=${loadState.timeout} workers=${loadState.workers}" \
+                         -i ${inventoryPath}`;
+            
+            exec(cmd, (error, stdout, stderr) => {
+                if (error) {
+                    console.error('❌ Ansible error:', error);
+                    return res.status(500).json({
+                        success: false,
+                        error: stderr || error.message
+                    });
+                }
+                res.json({
+                    success: true,
+                    state: loadState,
+                    timestamp: new Date().toISOString()
+                });
+            });
+        } else {
+            res.json({
+                success: true,
+                state: loadState,
+                message: 'Load state updated (playbook not found)',
+                timestamp: new Date().toISOString()
+            });
+        }
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Get metrics
+app.get('/api/metrics', (req, res) => {
+    const loadAvg = os.loadavg();
+    const cpuCount = os.cpus().length;
+    const cpu = (loadAvg[0] / cpuCount) * 100;
+    const memory = ((os.totalmem() - os.freemem()) / os.totalmem()) * 100;
+    
+    metrics.cpu = Math.round(cpu);
+    metrics.memory = Math.round(memory);
+    metrics.uptime = Math.round(process.uptime());
+    
+    // Simulated app metrics
+    metrics.totalRequests = Math.floor(Math.random() * 10000);
+    metrics.avgResponseTime = Math.floor(Math.random() * 200) + 50;
+    metrics.errorRate = Math.round((Math.random() * 5) * 10) / 10;
+    metrics.currentRps = Math.floor(Math.random() * 100) + 10;
+    
+    res.json({
+        success: true,
+        metrics: metrics,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Get system info
+app.get('/api/system-info', (req, res) => {
+    res.json({
+        hostname: os.hostname(),
+        platform: os.platform(),
+        release: os.release(),
+        cpus: os.cpus().length,
+        memory: {
+            total: os.totalmem(),
+            free: os.freemem(),
+            used: os.totalmem() - os.freemem()
+        },
+        node_version: process.version,
+        uptime: process.uptime(),
+        loadState: loadState
+    });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+    console.error('❌ Error:', err);
+    res.status(500).json({ success: false, error: err.message });
+});
+
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Node.js app running on http://0.0.0.0:${PORT}`);
+    console.log(`📊 Health: http://0.0.0.0:${PORT}/health`);
+    console.log(`📂 ANSIBLE_DIR: ${ANSIBLE_DIR}`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('📴 Shutting down...');
+    process.exit(0);
+});

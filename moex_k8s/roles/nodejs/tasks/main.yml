@@ -1,0 +1,152 @@
+# roles/nodejs/tasks/main.yml
+---
+- name: Install Docker and dependencies
+  block:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Create directory for nodejs app
+  file:
+    path: "{{ nodejs_app_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Create subdirectories
+  file:
+    path: "{{ nodejs_app_dir }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - public
+    - logs
+
+- name: Deploy server.js
+  template:
+    src: server.js.j2
+    dest: "{{ nodejs_app_dir }}/server.js"
+    mode: '0644'
+
+- name: Deploy package.json
+  template:
+    src: package.json.j2
+    dest: "{{ nodejs_app_dir }}/package.json"
+    mode: '0644'
+
+- name: Deploy index.html
+  template:
+    src: index.html.j2
+    dest: "{{ nodejs_app_dir }}/public/index.html"
+    mode: '0644'
+
+- name: Stop and remove existing nodejs container if exists
+  shell: |
+    docker stop nodejs-app 2>/dev/null || true
+    docker rm nodejs-app 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run nodejs container
+  shell: |
+    docker run -d \
+      --name nodejs-app \
+      --restart unless-stopped \
+      -p {{ nodejs_port }}:{{ nodejs_port }} \
+      -v {{ nodejs_app_dir }}:/app \
+      -v {{ ansible_playbook_dir }}:/ansible:ro \
+      -e NODE_ENV=production \
+      -e PORT={{ nodejs_port }} \
+      -e ANSIBLE_PLAYBOOK_DIR=/ansible \
+      -w /app \
+      node:{{ nodejs_version }}-alpine \
+      sh -c "npm install && node server.js"
+  register: docker_run
+  changed_when: docker_run.rc == 0
+
+- name: Wait for nodejs to be ready
+  wait_for:
+    port: "{{ nodejs_port }}"
+    delay: 10
+    timeout: 60
+    host: "127.0.0.1"
+
+- name: Test nodejs health endpoint
+  uri:
+    url: "http://127.0.0.1:{{ nodejs_port }}/health"
+    return_content: yes
+    status_code: 200
+  register: health_check
+  retries: 5
+  delay: 5
+  until: health_check.status == 200
+
+- name: Display health check result
+  debug:
+    msg: "Node.js health check: {{ health_check.content }}"
+
+- name: Display nodejs status
+  debug:
+    msg: |
+      ========================================
+      ✅ Node.js successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      🌐 URL:  http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}
+      🏥 Health: http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/health
+      📊 API: http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/api/metrics
+
+      Test commands:
+      curl http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/
+      curl http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/health
+      curl http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/api/metrics
+      ========================================
+
+- name: Save connection info
+  copy:
+    content: |
+      Node.js deployed on k8s host
+      Host: {{ ansible_default_ipv4.address }}
+      URL: http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}
+      Health: http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/health
+      API: http://{{ ansible_default_ipv4.address }}:{{ nodejs_port }}/api/metrics
+    dest: "{{ nodejs_app_dir }}/nodejs-info.txt"
+    mode: '0644'

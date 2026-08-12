@@ -1,0 +1,5 @@
+---
+nodejs_app_dir: /opt/nodejs-app
+nodejs_port: 3001
+nodejs_version: "18"
+ansible_playbook_dir: "{{ playbook_dir | dirname }}"
