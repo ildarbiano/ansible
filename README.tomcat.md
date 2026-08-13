@@ -76,3 +76,29 @@ ansible k8s -m shell -a "docker restart nginx" --vault-password-file ~/.ansible_
 # После перезапуска Nginx — проверяем
 curl http://192.168.0.55/health
 curl http://192.168.0.55/api/
+# 
+mcedit roles/nginx/handlers/main.yml
+
+# Запускаем деплой Nginx (он обновит конфигурацию)
+ansible-playbook playbooks/nginx-deploy.yml -i \
+ --vault-password-file ~/.ansible_vault_pass
+# Проверяем доступ к Tomcat через Nginx (корневой путь)
+# Проверяем API Tomcat через Nginx
+curl http://192.168.0.55/api/
+# 4. Проверяем actuator через Nginx
+curl http://192.168.0.55/actuator/health
+# Проверяем напрямую Tomcat (минуя Nginx)
+curl http://192.168.0.55:8080/
+
+# 5. Проверяем Node.js UI через Nginx (если настроен)
+curl http://192.168.0.55/ui/
+Проверьте Tomcat напрямую:
+bash
+# Проверяем корень Tomcat
+curl http://192.168.0.55:8080/
+
+# Проверяем, какие приложения развернуты
+ansible k8s -m shell -a "ls -la /opt/tomcat/webapps/"  --vault-password-file ~/.ansible_vault_pass
+
+# Проверяем логи Tomcat
+ansible k8s -m shell -a "docker logs tomcat --tail 20" --vault-password-file ~/.ansible_vault_pass

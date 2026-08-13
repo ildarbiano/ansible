@@ -34,4 +34,37 @@ http://192.168.0.55/
 /health → healthy
 / → HTML страница с "Nginx is running on k8s host!"
 появится html страница
-
+============================
+# Создаем SSL сертификат на хосте
+bash
+ansible k8s -m shell -a "mkdir -p /opt/nginx/ssl && openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+-keyout /opt/nginx/ssl/server.key \
+-out /opt/nginx/ssl/server.crt \
+-subj '/C=RU/ST=Moscow/L=Moscow/O=Dev/CN=192.168.0.55'" \
+--vault-password-file ~/.ansible_vault_pass
+# 1. Создаем шаблон index.html.j2
+# 2. Добавляем SSL и обновляем tasks/main.yml
+# 3. Обновляем шаблон nginx.conf.j2
+# 4. Добавляем handler
+# 5. Запускаем плейбук
+# 6. Проверяем
+bash
+# HTTP → HTTPS редирект
+curl -I http://192.168.0.55
+# HTTPS на статику Nginx
+curl -k https://192.168.0.55/
+# HTTPS на Node.js UI
+curl -k https://192.168.0.55/ui/
+# HTTPS на Tomcat API (если есть)
+curl -k https://192.168.0.55/api/
+-----------------------------------
+# 1. Проверяем HTTP → HTTPS редирект
+curl -I http://192.168.0.55
+# 2. Проверяем HTTPS на статику Nginx
+curl -k https://192.168.0.55/
+# 3. Проверяем Node.js UI через HTTPS
+curl -k https://192.168.0.55/ui/
+# 4. Проверяем Tomcat через HTTPS (корень)
+curl -k https://192.168.0.55/api/
+# 5. Проверяем health через HTTPS
+curl -k https://192.168.0.55/health
