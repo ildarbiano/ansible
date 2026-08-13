@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nginx on k8s host</title>
+    <style>
+        body { font-family: Arial; margin: 50px; text-align: center; }
+        h1 { color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>✅ Nginx is running on k8s host!</h1>
+    <p>Host: {{ ansible_default_ipv4.address }}</p>
+    <p>Deployed by Ansible</p>
+    <p><a href="/health">Health check</a></p>
+    <p><a href="/ui/">Node.js UI</a></p>
+</body>
+</html>

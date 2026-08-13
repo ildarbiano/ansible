@@ -50,47 +50,32 @@
     state: directory
     mode: '0755'
 
-- name: Create simple nginx configuration
-  copy:
+- name: Create SSL directory
+  file:
+    path: /opt/nginx/ssl
+    state: directory
+    mode: '0755'
+
+- name: Generate SSL certificate
+  shell: |
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /opt/nginx/ssl/server.key \
+      -out /opt/nginx/ssl/server.crt \
+      -subj "/C=RU/ST=Moscow/L=Moscow/O=Dev/CN={{ ansible_default_ipv4.address }}"
+  args:
+    creates: /opt/nginx/ssl/server.crt
+
+- name: Deploy nginx configuration from template
+  template:
+    src: nginx.conf.j2
     dest: /opt/nginx/nginx.conf
-    content: |
-      server {
-          listen 80;
-          server_name _;
-
-          location / {
-              root /usr/share/nginx/html;
-              index index.html;
-          }
-
-          location /health {
-              access_log off;
-              return 200 "healthy\n";
-              add_header Content-Type text/plain;
-          }
-      }
     mode: '0644'
+  notify: restart nginx
 
-- name: Create test index.html
-  copy:
+- name: Deploy index.html from template
+  template:
+    src: index.html.j2
     dest: /opt/nginx/index.html
-    content: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <title>Nginx on k8s host</title>
-          <style>
-              body { font-family: Arial; margin: 50px; text-align: center; }
-              h1 { color: #4CAF50; }
-          </style>
-      </head>
-      <body>
-          <h1>✅ Nginx is running on k8s host!</h1>
-          <p>Host: {{ ansible_default_ipv4.address }}</p>
-          <p>Deployed by Ansible</p>
-          <p><a href="/health">Health check</a></p>
-      </body>
-      </html>
     mode: '0644'
 
 - name: Stop and remove existing nginx container if exists
@@ -100,13 +85,15 @@
   ignore_errors: yes
   changed_when: false
 
-- name: Run nginx container
+- name: Run nginx container with SSL
   shell: |
     docker run -d \
       --name nginx \
       --restart unless-stopped \
       -p 80:80 \
+      -p 443:443 \
       -v /opt/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+      -v /opt/nginx/ssl:/etc/nginx/ssl:ro \
       -v /opt/nginx/index.html:/usr/share/nginx/html/index.html:ro \
       nginx:1.25-alpine
   register: docker_run
@@ -122,6 +109,7 @@
 - name: Test nginx health endpoint
   uri:
     url: "http://{{ ansible_default_ipv4.address }}/health"
+    validate_certs: no
     return_content: yes
     status_code: 200
   register: health_check

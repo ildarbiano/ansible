@@ -1,49 +1,50 @@
+# HTTP → HTTPS редирект
 server {
     listen 80;
-    server_name _;
+    server_name {{ ansible_default_ipv4.address }};
+    return 301 https://$server_name$request_uri;
+}
 
-    # Health check
-    location /health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
-    }
+# HTTPS
+server {
+    listen 443 ssl http2;
+    server_name {{ ansible_default_ipv4.address }};
 
-    # Static files
+    ssl_certificate /etc/nginx/ssl/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/server.key;
+    
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Статика Nginx
     location / {
         root /usr/share/nginx/html;
-        try_files $uri $uri/ /index.html;
-        expires 1h;
-        add_header Cache-Control "public, immutable";
+        index index.html;
     }
 
-    # API Gateway → Tomcat
+    # Tomcat API
     location /api/ {
-        proxy_pass http://{{ ansible_default_ipv4.address }}:8080/api/;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
+        proxy_pass http://{{ ansible_default_ipv4.address }}:8080/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503;
-        proxy_next_upstream_tries 3;
     }
 
-    # Actuator
-    location /actuator/ {
-        proxy_pass http://{{ ansible_default_ipv4.address }}:8080/actuator/;
+    # Node.js UI
+    location /ui/ {
+        proxy_pass http://{{ ansible_default_ipv4.address }}:3001/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 
-        allow 192.168.0.0/16;
-        allow 10.0.0.0/8;
-        allow 172.16.0.0/12;
-        deny all;
+    # Health
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
     }
 }
