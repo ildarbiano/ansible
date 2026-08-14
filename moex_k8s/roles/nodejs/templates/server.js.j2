@@ -1,3 +1,4 @@
+// roles/nodejs/templates/server.js.j2
 const express = require('express');
 const cors = require('cors');
 const { exec } = require('child_process');
@@ -13,6 +14,9 @@ const ANSIBLE_DIR = process.env.ANSIBLE_PLAYBOOK_DIR || '/ansible';
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Добавляем статику для вкладок
+app.use('/tabs', express.static(path.join(__dirname, 'public/tabs')));
 
 // Logging
 app.use((req, res, next) => {

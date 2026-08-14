@@ -15,7 +15,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: rgba(255,255,255,0.03);
             border-radius: 20px;
@@ -29,12 +29,61 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
         }
+        
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            border: none;
+            background: transparent;
+            color: #8892b0;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .tab-btn:hover {
+            color: #64ffda;
+            background: rgba(100,255,218,0.05);
+        }
+        .tab-btn.active {
+            color: #64ffda;
+            background: rgba(100,255,218,0.1);
+            border-bottom: 2px solid #64ffda;
+        }
+        
+        /* Содержимое вкладок */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Сетка */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
-        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        
         .card {
             background: rgba(255,255,255,0.03);
             border-radius: 15px;
@@ -50,6 +99,59 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding-bottom: 10px;
         }
+        
+        /* Текст вкладок */
+        .tab-text {
+            color: #ccd6f6;
+            line-height: 1.8;
+            font-size: 14px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+            min-height: 300px;
+        }
+        .tab-text h3 {
+            color: #64ffda;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .tab-text p {
+            margin-bottom: 12px;
+            color: #8892b0;
+        }
+        .tab-text ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .tab-text ul li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #8892b0;
+        }
+        .tab-text ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #64ffda;
+        }
+        .tab-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .tab-placeholder {
+            color: #4a5a7a;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        /* Регуляторы */
         .control-group { margin-bottom: 20px; }
         .control-header {
             display: flex;
@@ -97,6 +199,8 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(100,255,218,0.3);
         }
+        
+        /* Метрики */
         .metrics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -139,90 +243,233 @@
 </head>
 <body>
 <div class="container">
-    <h1>🚀 Управление нагрузкой</h1>
-    <div class="grid-2">
-        <div>
-            <div class="card">
-                <div class="card-title">📊 Статус сервисов</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                    <span class="status-badge"><span class="status-dot green"></span> Nginx</span>
-                    <span class="status-badge"><span class="status-dot green"></span> Tomcat</span>
-                    <span class="status-badge"><span class="status-dot green"></span> PostgreSQL</span>
-                    <span class="status-badge"><span class="status-dot green"></span> Node.js</span>
-                </div>
-                <div style="margin-top: 15px; font-size: 13px; color: #8892b0;">
-                    <p>Стенд для тестирования производительности микросервисной архитектуры</p>
+    <h1>🚀 Управление нагрузкой стенда</h1>
+    
+    <!-- Вкладки -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tis">ТИС</button>
+        <button class="tab-btn" data-tab="ais">АИС</button>
+        <button class="tab-btn" data-tab="rais">РАИС</button>
+    </div>
+
+    <!-- Вкладка ТИС -->
+    <div id="tis" class="tab-content active">
+        <div class="grid-2">
+            <div>
+                <div id="tis-text" class="tab-text">
+                    <div class="tab-placeholder">Загрузка...</div>
                 </div>
             </div>
-            <div class="card" style="margin-top: 20px;">
-                <div class="card-title">⚡ Быстрые пресеты</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button onclick="setPreset('light')" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(100,255,218,0.2); background: transparent; color: #64ffda; cursor: pointer;">🌱 Легкая</button>
-                    <button onclick="setPreset('medium')" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(246,168,69,0.2); background: transparent; color: #f6a845; cursor: pointer;">⚡ Средняя</button>
-                    <button onclick="setPreset('heavy')" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,107,107,0.2); background: transparent; color: #ff6b6b; cursor: pointer;">🔥 Высокая</button>
-                    <button onclick="setPreset('stress')" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,107,107,0.4); background: rgba(255,107,107,0.05); color: #ff6b6b; cursor: pointer;">💀 Стресс</button>
+            <div>
+                <div class="card">
+                    <div class="card-title">🎛️ Управление нагрузкой</div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">📥 GET запросы/сек</span>
+                            <span class="control-value" id="getValue">10</span>
+                        </div>
+                        <input type="range" id="getRate" min="0" max="100" value="10" oninput="updateSlider('getRate', 'getValue')">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">📤 POST запросы/сек</span>
+                            <span class="control-value" id="postValue">5</span>
+                        </div>
+                        <input type="range" id="postRate" min="0" max="50" value="5" oninput="updateSlider('postRate', 'postValue')">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">⏱️ Таймаут (мс)</span>
+                            <span class="control-value" id="timeoutValue">5000</span>
+                        </div>
+                        <input type="range" id="timeout" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout', 'timeoutValue')">
+                    </div>
+                    <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">📈 Метрики приложения</div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-label">Всего запросов</div>
+                            <div class="metric-value" id="totalRequests">0</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Среднее время</div>
+                            <div class="metric-value" id="avgResponseTime">0ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Ошибки</div>
+                            <div class="metric-value" id="errorRate">0%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">RPS</div>
+                            <div class="metric-value" id="currentRps">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div>
-            <div class="card">
-                <div class="card-title">🎛️ Регуляторы нагрузки</div>
-                <div class="control-group">
-                    <div class="control-header">
-                        <span class="control-label">📥 GET запросы/сек</span>
-                        <span class="control-value" id="getValue">10</span>
-                    </div>
-                    <input type="range" id="getRate" min="0" max="100" value="10" 
-                           oninput="updateSlider('getRate', 'getValue')">
+    </div>
+
+    <!-- Вкладка АИС -->
+    <div id="ais" class="tab-content">
+        <div class="grid-2">
+            <div>
+                <div id="ais-text" class="tab-text">
+                    <div class="tab-placeholder">Загрузка...</div>
                 </div>
-                <div class="control-group">
-                    <div class="control-header">
-                        <span class="control-label">📤 POST запросы/сек</span>
-                        <span class="control-value" id="postValue">5</span>
-                    </div>
-                    <input type="range" id="postRate" min="0" max="50" value="5" 
-                           oninput="updateSlider('postRate', 'postValue')">
-                </div>
-                <div class="control-group">
-                    <div class="control-header">
-                        <span class="control-label">⏱️ Таймаут (мс)</span>
-                        <span class="control-value" id="timeoutValue">5000</span>
-                    </div>
-                    <input type="range" id="timeout" min="100" max="10000" value="5000" step="100" 
-                           oninput="updateSlider('timeout', 'timeoutValue')">
-                </div>
-                <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
             </div>
-            <div class="card" style="margin-top: 20px;">
-                <div class="card-title">📈 Метрики приложения</div>
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <div class="metric-label">Всего запросов</div>
-                        <div class="metric-value" id="totalRequests">0</div>
+            <div>
+                <div class="card">
+                    <div class="card-title">🎛️ Управление нагрузкой</div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">📥 GET запросы/сек</span>
+                            <span class="control-value" id="getValue2">10</span>
+                        </div>
+                        <input type="range" id="getRate2" min="0" max="100" value="10" oninput="updateSlider('getRate2', 'getValue2')">
                     </div>
-                    <div class="metric-item">
-                        <div class="metric-label">Среднее время</div>
-                        <div class="metric-value" id="avgResponseTime">0ms</div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">📤 POST запросы/сек</span>
+                            <span class="control-value" id="postValue2">5</span>
+                        </div>
+                        <input type="range" id="postRate2" min="0" max="50" value="5" oninput="updateSlider('postRate2', 'postValue2')">
                     </div>
-                    <div class="metric-item">
-                        <div class="metric-label">Ошибки</div>
-                        <div class="metric-value" id="errorRate">0%</div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">⏱️ Таймаут (мс)</span>
+                            <span class="control-value" id="timeoutValue2">5000</span>
+                        </div>
+                        <input type="range" id="timeout2" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout2', 'timeoutValue2')">
                     </div>
-                    <div class="metric-item">
-                        <div class="metric-label">RPS</div>
-                        <div class="metric-value" id="currentRps">0</div>
+                    <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">📈 Метрики приложения</div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-label">Всего запросов</div>
+                            <div class="metric-value" id="totalRequests2">0</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Среднее время</div>
+                            <div class="metric-value" id="avgResponseTime2">0ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Ошибки</div>
+                            <div class="metric-value" id="errorRate2">0%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">RPS</div>
+                            <div class="metric-value" id="currentRps2">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вкладка РАИС -->
+    <div id="rais" class="tab-content">
+        <div class="grid-2">
+            <div>
+                <div id="rais-text" class="tab-text">
+                    <div class="tab-placeholder">Загрузка...</div>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <div class="card-title">🎛️ Управление нагрузкой</div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">📥 GET запросы/сек</span>
+                            <span class="control-value" id="getValue3">10</span>
+                        </div>
+                        <input type="range" id="getRate3" min="0" max="100" value="10" oninput="updateSlider('getRate3', 'getValue3')">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">📤 POST запросы/сек</span>
+                            <span class="control-value" id="postValue3">5</span>
+                        </div>
+                        <input type="range" id="postRate3" min="0" max="50" value="5" oninput="updateSlider('postRate3', 'postValue3')">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-header">
+                            <span class="control-label">⏱️ Таймаут (мс)</span>
+                            <span class="control-value" id="timeoutValue3">5000</span>
+                        </div>
+                        <input type="range" id="timeout3" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout3', 'timeoutValue3')">
+                    </div>
+                    <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-title">📈 Метрики приложения</div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-label">Всего запросов</div>
+                            <div class="metric-value" id="totalRequests3">0</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Среднее время</div>
+                            <div class="metric-value" id="avgResponseTime3">0ms</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Ошибки</div>
+                            <div class="metric-value" id="errorRate3">0%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">RPS</div>
+                            <div class="metric-value" id="currentRps3">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <script>
+// Переключение вкладок
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById(this.dataset.tab).classList.add('active');
+        loadTabContent(this.dataset.tab);
+    });
+});
+
+// Загрузка содержимого вкладки
+async function loadTabContent(tabId) {
+    const container = document.getElementById(tabId + '-text');
+    if (!container) return;
+    
+    // Показываем индикатор загрузки
+    container.innerHTML = '<div class="tab-placeholder">Загрузка...</div>';
+    
+    try {
+        const response = await fetch('/ui/tabs/' + tabId + '.html');
+        if (response.ok) {
+            container.innerHTML = await response.text();
+        } else {
+            container.innerHTML = '<div class="tab-placeholder">❌ Ошибка загрузки содержимого</div>';
+        }
+    } catch (error) {
+        console.error('Error loading tab content:', error);
+        container.innerHTML = '<div class="tab-placeholder">❌ Ошибка загрузки: ' + error.message + '</div>';
+    }
+}
+
+// Обновление слайдера
 function updateSlider(sliderId, displayId) {
     const val = document.getElementById(sliderId).value;
     document.getElementById(displayId).textContent = val;
 }
 
+// Применение нагрузки
 async function applyLoad() {
     const data = {
         getRate: parseInt(document.getElementById('getRate').value),
@@ -230,58 +477,41 @@ async function applyLoad() {
         timeout: parseInt(document.getElementById('timeout').value)
     };
     try {
-        const response = await fetch('/api/update-load', {
+        const response = await fetch('/ui/api/update-load', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
         const result = await response.json();
-        if (result.success) {
-            alert('✅ Настройки применены успешно!');
-        } else {
-            alert('❌ Ошибка: ' + result.error);
-        }
+        alert(result.success ? '✅ Настройки применены успешно!' : '❌ Ошибка: ' + result.error);
     } catch (error) {
         alert('❌ Ошибка соединения: ' + error.message);
     }
 }
 
-function setPreset(preset) {
-    const presets = {
-        light: { get: 5, post: 2, timeout: 5000 },
-        medium: { get: 25, post: 10, timeout: 3000 },
-        heavy: { get: 60, post: 25, timeout: 2000 },
-        stress: { get: 100, post: 50, timeout: 1000 }
-    };
-    const p = presets[preset];
-    if (!p) return;
-    document.getElementById('getRate').value = p.get;
-    document.getElementById('postRate').value = p.post;
-    document.getElementById('timeout').value = p.timeout;
-    updateSlider('getRate', 'getValue');
-    updateSlider('postRate', 'postValue');
-    updateSlider('timeout', 'timeoutValue');
-    applyLoad();
-}
-
+// Получение метрик
 async function fetchMetrics() {
     try {
-        const response = await fetch('/api/metrics');
+        const response = await fetch('/ui/api/metrics');
         const data = await response.json();
         if (data.success) {
             const m = data.metrics;
-            document.getElementById('totalRequests').textContent = m.totalRequests || 0;
-            document.getElementById('avgResponseTime').textContent = (m.avgResponseTime || 0) + 'ms';
-            document.getElementById('errorRate').textContent = (m.errorRate || 0) + '%';
-            document.getElementById('currentRps').textContent = m.currentRps || 0;
+            document.querySelectorAll('[id="totalRequests"]').forEach(el => el.textContent = m.totalRequests || 0);
+            document.querySelectorAll('[id="avgResponseTime"]').forEach(el => el.textContent = (m.avgResponseTime || 0) + 'ms');
+            document.querySelectorAll('[id="errorRate"]').forEach(el => el.textContent = (m.errorRate || 0) + '%');
+            document.querySelectorAll('[id="currentRps"]').forEach(el => el.textContent = m.currentRps || 0);
         }
     } catch (error) {
         console.error('Error fetching metrics:', error);
     }
 }
 
-setInterval(fetchMetrics, 5000);
-fetchMetrics();
+// Загружаем первую вкладку при старте
+document.addEventListener('DOMContentLoaded', function() {
+    loadTabContent('tis');
+    setInterval(fetchMetrics, 5000);
+    fetchMetrics();
+});
 </script>
 </body>
 </html>

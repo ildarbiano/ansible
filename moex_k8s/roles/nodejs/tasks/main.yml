@@ -58,6 +58,7 @@
     mode: '0755'
   loop:
     - public
+    - public/tabs
     - logs
 
 - name: Deploy server.js
@@ -77,6 +78,16 @@
     src: index.html.j2
     dest: "{{ nodejs_app_dir }}/public/index.html"
     mode: '0644'
+
+- name: Deploy tab files
+  template:
+    src: "tabs/{{ item }}"
+    dest: "{{ nodejs_app_dir }}/public/tabs/{{ item }}"
+    mode: '0644'
+  loop:
+    - tis.html
+    - ais.html
+    - rais.html
 
 - name: Stop and remove existing nodejs container if exists
   shell: |
