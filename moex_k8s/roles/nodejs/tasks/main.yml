@@ -59,6 +59,7 @@
   loop:
     - public
     - public/tabs
+    - public/images
     - logs
 
 - name: Deploy server.js
@@ -88,6 +89,14 @@
     - tis.html
     - ais.html
     - rais.html
+
+- name: Deploy images
+  copy:
+    src: "public/images/{{ item }}"
+    dest: "{{ nodejs_app_dir }}/public/images/{{ item }}"
+    mode: '0644'
+  loop:
+    - "Simple Net Components.png"
 
 - name: Stop and remove existing nodejs container if exists
   shell: |
