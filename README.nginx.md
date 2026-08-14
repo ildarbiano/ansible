@@ -58,13 +58,16 @@ curl -k https://192.168.0.55/ui/
 # HTTPS на Tomcat API (если есть)
 curl -k https://192.168.0.55/api/
 -----------------------------------
-# 1. Проверяем HTTP → HTTPS редирект
-curl -I http://192.168.0.55
-# 2. Проверяем HTTPS на статику Nginx
+# Проверяем HTTPS:
+# на статику Nginx
 curl -k https://192.168.0.55/
-# 3. Проверяем Node.js UI через HTTPS
+	https://192.168.0.55/
+# Node.js UI через HTTPS
 curl -k https://192.168.0.55/ui/
-# 4. Проверяем Tomcat через HTTPS (корень)
+	https://192.168.0.55/ui/
+# Tomcat через HTTP https://192.168.0.55/S (корень)
 curl -k https://192.168.0.55/api/
-# 5. Проверяем health через HTTPS
+	https://192.168.0.55/api/
+# health через HTTPS
 curl -k https://192.168.0.55/health
+	https://192.168.0.55/health

@@ -56,19 +56,30 @@ ansible-playbook playbooks/nodejs-deploy.yml \
   --vault-password-file ~/.ansible_vault_pass \
   -v
 # Запускаем деплой Node.js
-ansible-playbook playbooks/nodejs-deploy.yml \
-  -i inventories/dev/hosts.yml \
-  --vault-password-file ~/.ansible_vault_pass
+ansible-playbook playbooks/nodejs-deploy.yml --vault-password-file ~/.ansible_vault_pass
 
 =============================================
 # 1. Проверяем, запущен ли контейнер
 docker ps | grep nodejs
 
-# 2. Проверяем health endpoint
+# Проверяем health endpoint
 curl http://192.168.0.55:3001/health
-
-# 3. Проверяем метрики
+# Проверяем метрики
 curl http://192.168.0.55:3001/api/metrics
-
-# 4. Открываем в браузере
+###	проверяем Node.js UI
+#	в браузере, напрямую
 http://192.168.0.55:3001
+# 	через Nginx 
+https://192.168.0.55/ui/
+
+
+====== Редизайн GUI ===========================
+#  Создаем структуру файлов
+mkdir -p roles/nodejs/templates/tabs
+# Создаем пустые файлы для вкладок
+touch roles/nodejs/templates/tabs/tis.html roles/nodejs/templates/tabs/ais.html roles/nodejs/templates/tabs/rais.html
+# Обновляем roles/nodejs/tasks/main.yml
+# Обновляем server.js.j2 с указанием пути
+# Обновляем index.html.j2 с указанием пути
+# Наполняем пустые файлы для вкладок roles/nodejs/templates/tabs
+
