@@ -82,4 +82,14 @@ touch roles/nodejs/templates/tabs/tis.html roles/nodejs/templates/tabs/ais.html 
 # Обновляем server.js.j2 с указанием пути
 # Обновляем index.html.j2 с указанием пути
 # Наполняем пустые файлы для вкладок roles/nodejs/templates/tabs
-
+# 1. Создайте правильную структуру
+mkdir -p roles/nodejs/files/public/images
+# Скопируйте картинку
+cp /path/to/your/image.png roles/nodejs/templates/public/images/
+# Добавьте в tasks/main.yml копирование изображений
+# Проверяем host
+ansible k8s -m shell -a "ls -la /opt/nodejs-app/public"  --vault-password-file ~/.ansible_vault_pass
+# Проверяем docker, есть ли директория images docker
+ansible k8s -m shell -a "docker exec nodejs-app ls -la /app/public/images/" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+# Если есть, проверяем, что в ней лежит
+ansible k8s -m shell -a "docker exec nodejs-app ls -la /app/public/" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
