@@ -67,19 +67,22 @@
     src: server.js.j2
     dest: "{{ nodejs_app_dir }}/server.js"
     mode: '0644'
+  notify: restart nodejs
 
 - name: Deploy package.json
   template:
     src: package.json.j2
     dest: "{{ nodejs_app_dir }}/package.json"
     mode: '0644'
+  notify: restart nodejs
 
 - name: Deploy index.html
   template:
     src: index.html.j2
     dest: "{{ nodejs_app_dir }}/public/index.html"
     mode: '0644'
-
+  notify: restart nodejs
+ 
 - name: Deploy tab files
   template:
     src: "tabs/{{ item }}"
@@ -89,6 +92,7 @@
     - tis.html
     - ais.html
     - rais.html
+  notify: restart nodejs
 
 - name: Deploy images
   copy:
@@ -96,7 +100,8 @@
     dest: "{{ nodejs_app_dir }}/public/images/{{ item }}"
     mode: '0644'
   loop:
-    - "Simple Net Components.png"
+    - "Simple_Net_Components.png"
+  notify: restart nodejs
 
 - name: Stop and remove existing nodejs container if exists
   shell: |

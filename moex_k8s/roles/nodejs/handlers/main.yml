@@ -1,0 +1,4 @@
+---
+- name: restart nodejs
+  shell: docker restart nodejs-app
+  listen: "restart nodejs"

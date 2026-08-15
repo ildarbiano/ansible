@@ -74,22 +74,19 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Сетка - меняем порядок: слева управление, справа текст */
+        /* Сетка: слева управление, справа текст */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
-        /* При адаптации: управление всегда сверху, текст снизу */
         @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
             }
-            /* Левая колонка (управление) — сверху */
             .grid-2 > div:first-child {
                 order: 0;
             }
-            /* Правая колонка (текст) — снизу */
             .grid-2 > div:last-child {
                 order: 1;
             }
@@ -179,7 +176,7 @@
             left: 0;
             color: #64ffda;
         }
-        
+
         /* Таблицы */
         .tab-text table {
             width: 100%;
@@ -312,185 +309,81 @@
 <div class="container">
     <h1>🚀 Управление нагрузкой стенда</h1>
 
-    <!-- Вкладки -->
+    <!-- Вкладки (общие) -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="tis">ТИС</button>
         <button class="tab-btn" data-tab="ais">АИС</button>
         <button class="tab-btn" data-tab="rais">РАИС</button>
     </div>
 
-    <!-- Вкладка ТИС -->
-    <div id="tis" class="tab-content active">
-        <div class="grid-2">
-            <!-- ЛЕВАЯ КОЛОНКА: Управление нагрузкой (всегда первая) -->
-            <div>
-                <div class="card">
-                    <div class="card-title">🎛️ Управление нагрузкой</div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">📥 GET запросы/сек</span>
-                            <span class="control-value" id="getValue">10</span>
-                        </div>
-                        <input type="range" id="getRate" min="0" max="100" value="10" oninput="updateSlider('getRate', 'getValue')">
+    <!-- Основное содержимое: управление слева, текст справа -->
+    <div class="grid-2">
+        <!-- ЛЕВАЯ КОЛОНКА: Управление и метрики (общие для всех вкладок) -->
+        <div>
+            <div class="card">
+                <div class="card-title">Управление нагрузкой</div>
+                <div class="control-group">
+                    <div class="control-header">
+                        <span class="control-label">📥 GET запросы в %</span>
+                        <span class="control-value" id="getValue">10</span>
                     </div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">📤 POST запросы/сек</span>
-                            <span class="control-value" id="postValue">5</span>
-                        </div>
-                        <input type="range" id="postRate" min="0" max="50" value="5" oninput="updateSlider('postRate', 'postValue')">
-                    </div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">⏱️ Таймаут (мс)</span>
-                            <span class="control-value" id="timeoutValue">5000</span>
-                        </div>
-                        <input type="range" id="timeout" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout', 'timeoutValue')">
-                    </div>
-                    <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
+                    <input type="range" id="getRate" min="0" max="100" value="10" oninput="updateSlider('getRate', 'getValue')">
                 </div>
-                <div class="card" style="margin-top: 20px;">
-                    <div class="card-title">📈 Метрики приложения</div>
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <div class="metric-label">Всего запросов</div>
-                            <div class="metric-value" id="totalRequests">0</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Среднее время</div>
-                            <div class="metric-value" id="avgResponseTime">0ms</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Ошибки</div>
-                            <div class="metric-value" id="errorRate">0%</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">RPS</div>
-                            <div class="metric-value" id="currentRps">0</div>
-                        </div>
+                <div class="control-group">
+                    <div class="control-header">
+                        <span class="control-label">📤 POST запросы в %</span>
+                        <span class="control-value" id="postValue">5</span>
+                    </div>
+                    <input type="range" id="postRate" min="0" max="50" value="5" oninput="updateSlider('postRate', 'postValue')">
+                </div>
+                <div class="control-group">
+                    <div class="control-header">
+                        <span class="control-label">⏱️ Таймаут/Задержка (мс)</span>
+                        <span class="control-value" id="timeoutValue">5000</span>
+                    </div>
+                    <input type="range" id="timeout" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout', 'timeoutValue')">
+                </div>
+                <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
+            </div>
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-title">Метрики приложения</div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Всего запросов</div>
+                        <div class="metric-value" id="totalRequests">0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Среднее время</div>
+                        <div class="metric-value" id="avgResponseTime">0ms</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Ошибки</div>
+                        <div class="metric-value" id="errorRate">0%</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">RPS</div>
+                        <div class="metric-value" id="currentRps">0</div>
                     </div>
                 </div>
             </div>
-            <!-- ПРАВАЯ КОЛОНКА: Текст вкладки (всегда вторая) -->
-            <div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: Содержимое вкладки (меняется) -->
+        <div>
+            <!-- Вкладка ТИС -->
+            <div id="tis" class="tab-content active">
                 <div id="tis-text" class="tab-text">
                     <div class="tab-placeholder">Загрузка...</div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Вкладка АИС -->
-    <div id="ais" class="tab-content">
-        <div class="grid-2">
-            <div>
-                <div class="card">
-                    <div class="card-title">🎛️ Управление нагрузкой</div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">📥 GET запросы/сек</span>
-                            <span class="control-value" id="getValue2">10</span>
-                        </div>
-                        <input type="range" id="getRate2" min="0" max="100" value="10" oninput="updateSlider('getRate2', 'getValue2')">
-                    </div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">📤 POST запросы/сек</span>
-                            <span class="control-value" id="postValue2">5</span>
-                        </div>
-                        <input type="range" id="postRate2" min="0" max="50" value="5" oninput="updateSlider('postRate2', 'postValue2')">
-                    </div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">⏱️ Таймаут (мс)</span>
-                            <span class="control-value" id="timeoutValue2">5000</span>
-                        </div>
-                        <input type="range" id="timeout2" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout2', 'timeoutValue2')">
-                    </div>
-                    <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
-                </div>
-                <div class="card" style="margin-top: 20px;">
-                    <div class="card-title">📈 Метрики приложения</div>
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <div class="metric-label">Всего запросов</div>
-                            <div class="metric-value" id="totalRequests2">0</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Среднее время</div>
-                            <div class="metric-value" id="avgResponseTime2">0ms</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Ошибки</div>
-                            <div class="metric-value" id="errorRate2">0%</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">RPS</div>
-                            <div class="metric-value" id="currentRps2">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div>
+            <!-- Вкладка АИС -->
+            <div id="ais" class="tab-content">
                 <div id="ais-text" class="tab-text">
                     <div class="tab-placeholder">Загрузка...</div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Вкладка РАИС -->
-    <div id="rais" class="tab-content">
-        <div class="grid-2">
-            <div>
-                <div class="card">
-                    <div class="card-title">🎛️ Управление нагрузкой</div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">📥 GET запросы/сек</span>
-                            <span class="control-value" id="getValue3">10</span>
-                        </div>
-                        <input type="range" id="getRate3" min="0" max="100" value="10" oninput="updateSlider('getRate3', 'getValue3')">
-                    </div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">📤 POST запросы/сек</span>
-                            <span class="control-value" id="postValue3">5</span>
-                        </div>
-                        <input type="range" id="postRate3" min="0" max="50" value="5" oninput="updateSlider('postRate3', 'postValue3')">
-                    </div>
-                    <div class="control-group">
-                        <div class="control-header">
-                            <span class="control-label">⏱️ Таймаут (мс)</span>
-                            <span class="control-value" id="timeoutValue3">5000</span>
-                        </div>
-                        <input type="range" id="timeout3" min="100" max="10000" value="5000" step="100" oninput="updateSlider('timeout3', 'timeoutValue3')">
-                    </div>
-                    <button class="btn-primary" onclick="applyLoad()">Применить настройки</button>
-                </div>
-                <div class="card" style="margin-top: 20px;">
-                    <div class="card-title">📈 Метрики приложения</div>
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <div class="metric-label">Всего запросов</div>
-                            <div class="metric-value" id="totalRequests3">0</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Среднее время</div>
-                            <div class="metric-value" id="avgResponseTime3">0ms</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">Ошибки</div>
-                            <div class="metric-value" id="errorRate3">0%</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-label">RPS</div>
-                            <div class="metric-value" id="currentRps3">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div>
+            <!-- Вкладка РАИС -->
+            <div id="rais" class="tab-content">
                 <div id="rais-text" class="tab-text">
                     <div class="tab-placeholder">Загрузка...</div>
                 </div>
@@ -516,8 +409,7 @@ async function loadTabContent(tabId) {
     const container = document.getElementById(tabId + '-text');
     if (!container) return;
 
-    container.innerHTML = '<div class="tab-placeholder">Загрузка...</div>';
-
+    // Убираем проверку - всегда загружаем заново
     try {
         const response = await fetch('/ui/tabs/' + tabId + '.html');
         if (response.ok) {
@@ -561,10 +453,10 @@ async function fetchMetrics() {
         const data = await response.json();
         if (data.success) {
             const m = data.metrics;
-            document.querySelectorAll('[id="totalRequests"]').forEach(el => el.textContent = m.totalRequests || 0);
-            document.querySelectorAll('[id="avgResponseTime"]').forEach(el => el.textContent = (m.avgResponseTime || 0) + 'ms');
-            document.querySelectorAll('[id="errorRate"]').forEach(el => el.textContent = (m.errorRate || 0) + '%');
-            document.querySelectorAll('[id="currentRps"]').forEach(el => el.textContent = m.currentRps || 0);
+            document.getElementById('totalRequests').textContent = m.totalRequests || 0;
+            document.getElementById('avgResponseTime').textContent = (m.avgResponseTime || 0) + 'ms';
+            document.getElementById('errorRate').textContent = (m.errorRate || 0) + '%';
+            document.getElementById('currentRps').textContent = m.currentRps || 0;
         }
     } catch (error) {
         console.error('Error fetching metrics:', error);
