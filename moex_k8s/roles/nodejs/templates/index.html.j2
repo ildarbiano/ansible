@@ -29,7 +29,7 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
         }
-        
+
         /* Вкладки */
         .tabs {
             display: flex;
@@ -60,7 +60,7 @@
             background: rgba(100,255,218,0.1);
             border-bottom: 2px solid #64ffda;
         }
-        
+
         /* Содержимое вкладок */
         .tab-content {
             display: none;
@@ -73,17 +73,28 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        /* Сетка */
+
+        /* Сетка - меняем порядок: слева управление, справа текст */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
         }
+        /* При адаптации: управление всегда сверху, текст снизу */
         @media (max-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr; }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            /* Левая колонка (управление) — сверху */
+            .grid-2 > div:first-child {
+                order: 0;
+            }
+            /* Правая колонка (текст) — снизу */
+            .grid-2 > div:last-child {
+                order: 1;
+            }
         }
-        
+
         .card {
             background: rgba(255,255,255,0.03);
             border-radius: 15px;
@@ -99,7 +110,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding-bottom: 10px;
         }
-        
+
         /* Текст вкладок */
         .tab-text {
             color: #ccd6f6;
@@ -115,6 +126,18 @@
             color: #64ffda;
             margin-bottom: 10px;
             font-size: 18px;
+        }
+        .tab-text h4 {
+            color: #ccd6f6;
+            margin: 15px 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .tab-text h5 {
+            color: #8892b0;
+            font-size: 15px;
+            margin: 12px 0 6px 0;
+            font-weight: 600;
         }
         .tab-text p {
             margin-bottom: 12px;
@@ -136,6 +159,50 @@
             left: 0;
             color: #64ffda;
         }
+        .tab-text ol {
+            padding-left: 20px;
+            color: #8892b0;
+        }
+        .tab-text ol li {
+            padding: 4px 0;
+        }
+        .tab-text ol li ul {
+            padding-left: 20px;
+        }
+        .tab-text ol li ul li {
+            padding: 2px 0;
+            padding-left: 20px;
+        }
+        .tab-text ol li ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #64ffda;
+        }
+        
+        /* Таблицы */
+        .tab-text table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        .tab-text th {
+            background: rgba(100,255,218,0.1);
+            color: #64ffda;
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 2px solid #64ffda;
+        }
+        .tab-text td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #ccd6f6;
+        }
+        .tab-text tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
         .tab-image {
             width: 100%;
             max-height: 200px;
@@ -150,7 +217,7 @@
             text-align: center;
             padding: 40px 20px;
         }
-        
+
         /* Регуляторы */
         .control-group { margin-bottom: 20px; }
         .control-header {
@@ -199,7 +266,7 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(100,255,218,0.3);
         }
-        
+
         /* Метрики */
         .metrics-grid {
             display: grid;
@@ -244,7 +311,7 @@
 <body>
 <div class="container">
     <h1>🚀 Управление нагрузкой стенда</h1>
-    
+
     <!-- Вкладки -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="tis">ТИС</button>
@@ -255,11 +322,7 @@
     <!-- Вкладка ТИС -->
     <div id="tis" class="tab-content active">
         <div class="grid-2">
-            <div>
-                <div id="tis-text" class="tab-text">
-                    <div class="tab-placeholder">Загрузка...</div>
-                </div>
-            </div>
+            <!-- ЛЕВАЯ КОЛОНКА: Управление нагрузкой (всегда первая) -->
             <div>
                 <div class="card">
                     <div class="card-title">🎛️ Управление нагрузкой</div>
@@ -308,17 +371,18 @@
                     </div>
                 </div>
             </div>
+            <!-- ПРАВАЯ КОЛОНКА: Текст вкладки (всегда вторая) -->
+            <div>
+                <div id="tis-text" class="tab-text">
+                    <div class="tab-placeholder">Загрузка...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Вкладка АИС -->
     <div id="ais" class="tab-content">
         <div class="grid-2">
-            <div>
-                <div id="ais-text" class="tab-text">
-                    <div class="tab-placeholder">Загрузка...</div>
-                </div>
-            </div>
             <div>
                 <div class="card">
                     <div class="card-title">🎛️ Управление нагрузкой</div>
@@ -367,17 +431,17 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <div id="ais-text" class="tab-text">
+                    <div class="tab-placeholder">Загрузка...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Вкладка РАИС -->
     <div id="rais" class="tab-content">
         <div class="grid-2">
-            <div>
-                <div id="rais-text" class="tab-text">
-                    <div class="tab-placeholder">Загрузка...</div>
-                </div>
-            </div>
             <div>
                 <div class="card">
                     <div class="card-title">🎛️ Управление нагрузкой</div>
@@ -426,6 +490,11 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <div id="rais-text" class="tab-text">
+                    <div class="tab-placeholder">Загрузка...</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -446,10 +515,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 async function loadTabContent(tabId) {
     const container = document.getElementById(tabId + '-text');
     if (!container) return;
-    
-    // Показываем индикатор загрузки
+
     container.innerHTML = '<div class="tab-placeholder">Загрузка...</div>';
-    
+
     try {
         const response = await fetch('/ui/tabs/' + tabId + '.html');
         if (response.ok) {
@@ -463,13 +531,11 @@ async function loadTabContent(tabId) {
     }
 }
 
-// Обновление слайдера
 function updateSlider(sliderId, displayId) {
     const val = document.getElementById(sliderId).value;
     document.getElementById(displayId).textContent = val;
 }
 
-// Применение нагрузки
 async function applyLoad() {
     const data = {
         getRate: parseInt(document.getElementById('getRate').value),
@@ -489,7 +555,6 @@ async function applyLoad() {
     }
 }
 
-// Получение метрик
 async function fetchMetrics() {
     try {
         const response = await fetch('/ui/api/metrics');
@@ -506,7 +571,6 @@ async function fetchMetrics() {
     }
 }
 
-// Загружаем первую вкладку при старте
 document.addEventListener('DOMContentLoaded', function() {
     loadTabContent('tis');
     setInterval(fetchMetrics, 5000);
