@@ -1,3 +1,4 @@
+# site_static_IP.yml
 ---
 - name: Deploy first for infra
   hosts: dev

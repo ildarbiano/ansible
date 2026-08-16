@@ -1,0 +1,54 @@
+# site_full_install.yml
+---
+- name: Install Docker on all hosts
+  hosts: all
+  become: yes
+  vars_files:
+    - group_vars/dev/vault.yml
+  roles:
+    - docker_setup
+
+- name: Deploy Nginx, Tomcat, Node.js on k8s
+  hosts: k8s
+  become: yes
+  vars_files:
+    - group_vars/dev/vault.yml
+  roles:
+    - nginx
+    - tomcat
+    - nodejs
+
+- name: Deploy PostgreSQL on pgs
+  hosts: pgs
+  become: yes
+  vars_files:
+    - group_vars/dev/vault.yml
+    - host_vars/pgs/vars.yml
+  roles:
+    - postgres
+
+- name: Deploy monitoring on monigen
+  hosts: monigen
+  become: yes
+  vars_files:
+    - group_vars/dev/vault.yml
+  roles:
+    - prometheus
+    - grafana
+
+- name: Deploy Node Exporter on all hosts
+  hosts: all
+  become: yes
+  vars_files:
+    - group_vars/dev/vault.yml
+  roles:
+    - node_exporter
+
+- name: Deploy Postgres Exporter on pgs
+  hosts: pgs
+  become: yes
+  vars_files:
+    - group_vars/dev/vault.yml
+    - host_vars/pgs/vars.yml
+  roles:
+    - postgres_exporter

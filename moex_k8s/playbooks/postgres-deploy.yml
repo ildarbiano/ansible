@@ -11,4 +11,5 @@
     postgres_password: "{{ vault_postgres_password }}"
 
   roles:
+    - docker_setup
     - postgres

@@ -8,6 +8,7 @@
     - ../group_vars/dev/vault.yml
   
   roles:
+    - docker_setup
     - node_exporter
 
 - name: Deploy Postgres Exporter

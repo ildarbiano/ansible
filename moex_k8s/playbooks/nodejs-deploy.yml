@@ -1,3 +1,4 @@
+# playbooks/nodejs-deploy.yml
 ---
 - name: Deploy Node.js on k8s host
   hosts: k8s
@@ -7,4 +8,5 @@
     - ../group_vars/dev/vault.yml
 
   roles:
+    - docker_setup
     - nodejs
