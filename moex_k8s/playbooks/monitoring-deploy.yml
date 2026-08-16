@@ -1,0 +1,44 @@
+# playbooks/monitoring-deploy.yml
+---
+- name: Deploy monitoring stack
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+  
+  roles:
+    - node_exporter
+
+- name: Deploy Postgres Exporter
+  hosts: pgs
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+    - ../group_vars/dev/vars.yml
+    - ../host_vars/pgs/vars.yml
+  
+  roles:
+    - postgres_exporter
+
+- name: Deploy Prometheus on monigen
+  hosts: monigen
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - prometheus
+
+- name: Deploy Grafana on monigen
+  hosts: monigen
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - grafana
+

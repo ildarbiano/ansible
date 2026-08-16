@@ -1,0 +1,25 @@
+# roles/node_exporter/tasks/main.yml
+---
+- name: Stop and remove existing node-exporter container if exists
+  shell: |
+    docker stop node-exporter 2>/dev/null || true
+    docker rm node-exporter 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run Node Exporter container
+  shell: |
+    docker run -d \
+      --name node-exporter \
+      --restart unless-stopped \
+      -p 9100:9100 \
+      -v /proc:/host/proc:ro \
+      -v /sys:/host/sys:ro \
+      -v /:/rootfs:ro \
+      prom/node-exporter:latest \
+      --path.procfs=/host/proc \
+      --path.sysfs=/host/sys \
+      --collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+  register: docker_run
+  changed_when: docker_run.rc == 0
+  ignore_errors: yes

@@ -1,3 +1,5 @@
+# host_vars/pgs/vars.yml
+---
 # Параметры подключения к контейнеру, хосту и базам данных
 static_ip: 192.168.0.66
 interface_name: enp0s3

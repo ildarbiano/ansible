@@ -1,0 +1,33 @@
+# roles/grafana/tasks/main.yml
+---
+- name: Create grafana directories
+  file:
+    path: "{{ item }}"
+    state: directory
+#    mode: '0755'       # ← владелец root, другие не могут писать
+    mode: '0777'   
+  loop:
+    - /opt/grafana
+    - /opt/grafana/data
+    - /opt/grafana/provisioning
+
+- name: Stop and remove existing grafana container if exists
+  shell: |
+    docker stop grafana 2>/dev/null || true
+    docker rm grafana 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run Grafana container
+  shell: |
+    docker run -d \
+      --name grafana \
+      --restart unless-stopped \
+      -p 3000:3000 \
+      -v /opt/grafana/data:/var/lib/grafana \
+      -u root \            
+      -e GF_SECURITY_ADMIN_PASSWORD=admin \
+      -e GF_INSTALL_PLUGINS=grafana-piechart-panel \
+      grafana/grafana:latest
+  register: docker_run
+  changed_when: docker_run.rc == 0

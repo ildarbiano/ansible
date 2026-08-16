@@ -1,0 +1,19 @@
+# roles/postgres_exporter/tasks/main.yml
+---
+- name: Stop and remove existing postgres-exporter container if exists
+  shell: |
+    docker stop postgres-exporter 2>/dev/null || true
+    docker rm postgres-exporter 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run Postgres Exporter container
+  shell: |
+    docker run -d \
+      --name postgres-exporter \
+      --restart unless-stopped \
+      -p 9187:9187 \
+      -e DATA_SOURCE_NAME="postgresql://{{ postgres_user }}:{{ vault_postgres_password }}@{{ ansible_host }}:5434/{{ postgres_db }}?sslmode=disable" \
+      prometheuscommunity/postgres-exporter:latest
+  register: docker_run
+  changed_when: docker_run.rc == 0

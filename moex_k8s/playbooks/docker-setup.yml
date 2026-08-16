@@ -1,0 +1,10 @@
+# playbooks/docker-setup.yml
+---
+- name: Setup Docker on all hosts
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+  roles:
+    - docker_setup

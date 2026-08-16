@@ -1,0 +1,41 @@
+# roles/prometheus/tasks/main.yml
+---
+- name: Create prometheus directories
+  file:
+    path: "{{ item }}"
+    state: directory
+#    mode: '0755'          # ← владелец root, другие не могут писать
+    mode: '0777'          # ← полные права (чтение/запись/выполнение для всех)
+  loop:
+    - /opt/prometheus
+    - /opt/prometheus/data
+
+- name: Deploy prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus/prometheus.yml
+    mode: '0755'          # ← владелец root, другие не могут писать
+  notify: restart prometheus
+
+- name: Stop and remove existing prometheus container if exists
+  shell: |
+    docker stop prometheus 2>/dev/null || true
+    docker rm prometheus 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run Prometheus container
+  shell: |
+    docker run -d \
+      --name prometheus \
+      --restart unless-stopped \
+      -p 9090:9090 \
+      -v /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro \
+      -v /opt/prometheus/data:/prometheus \
+      -u root \        
+      prom/prometheus:latest \
+      --config.file=/etc/prometheus/prometheus.yml \
+      --storage.tsdb.path=/prometheus \
+      --web.enable-lifecycle
+  register: docker_run
+  changed_when: docker_run.rc == 0

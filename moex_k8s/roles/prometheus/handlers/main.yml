@@ -1,0 +1,5 @@
+# roles/prometheus/handlers/main.yml
+---
+- name: restart prometheus
+  shell: docker restart prometheus
+  listen: "restart prometheus"
