@@ -18,11 +18,12 @@ ansible-playbook -i inventories/dev/hosts.yml playbooks/01-deploy-nginx.yml -v
 ansible-playbook playbooks/01-deploy-nginx.yml -v
 # запуск playbook с .ansible_vault_pass
 ansible-playbook \
-  playbooks/nginx-deploy.yml \
-  --vault-password-file ~/.ansible_vault_pass \
+playbooks/nginx-deploy.yml \
+--vault-password-file ~/.ansible_vault_pass \
   -v
 # запуск через оркестратор sity.yaml
-ansible-playbook site.yml --vault-password-file ~/.ansible_vault_pass
+ansible-playbook site.yml \
+--vault-password-file ~/.ansible_vault_pass
 
 # после успешного запуска, можно проверить:
 # Проверка с ansible-master
