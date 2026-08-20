@@ -1,0 +1,763 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "MsjffzSZz",
+    "namespace": "default",
+    "uid": "95b8fec6-8003-475e-8761-776617fbe433",
+    "resourceVersion": "1787213949709005",
+    "generation": 1,
+    "creationTimestamp": "2026-08-20T08:19:09Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "682701463101440"
+    },
+    "annotations": {
+      "grafana.app/createdBy": "user:cfvnf2wn4ham8e",
+      "grafana.app/saved-from-ui": "Grafana v13.2.0 (f681b1359f)"
+    }
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "",
+            "version": "v0",
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true,
+          "legacyOptions": {
+            "type": "dashboard"
+          }
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "description": "Official dashboard for NGINX Prometheus exporter for https://github.com/nginxinc/nginx-prometheus-exporter",
+    "editable": true,
+    "elements": {
+      "panel-10": {
+        "kind": "Panel",
+        "spec": {
+          "id": 10,
+          "title": "Processed connections",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "irate(nginx_connections_accepted{instance=~\"$instance\"}[5m])",
+                        "format": "time_series",
+                        "instant": false,
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} accepted"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "irate(nginx_connections_handled{instance=~\"$instance\"}[5m])",
+                        "format": "time_series",
+                        "instant": false,
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} handled"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "",
+            "spec": {
+              "options": {
+                "__angularMigration": {
+                  "autoMigrateFrom": "graph",
+                  "originalOptions": {
+                    "aliasColors": {},
+                    "bars": false,
+                    "dashLength": 10,
+                    "dashes": false,
+                    "fill": 1,
+                    "legend": {
+                      "alignAsTable": false,
+                      "avg": false,
+                      "current": false,
+                      "hideEmpty": false,
+                      "max": false,
+                      "min": false,
+                      "rightSide": false,
+                      "show": true,
+                      "total": false,
+                      "values": false
+                    },
+                    "lines": true,
+                    "linewidth": 1,
+                    "nullPointMode": "null",
+                    "percentage": false,
+                    "pointradius": 2,
+                    "points": false,
+                    "renderer": "flot",
+                    "seriesOverrides": [],
+                    "spaceLength": 10,
+                    "stack": false,
+                    "steppedLine": false,
+                    "thresholds": [],
+                    "timeRegions": [],
+                    "tooltip": {
+                      "shared": true,
+                      "sort": 0,
+                      "value_type": "individual"
+                    },
+                    "xaxis": {
+                      "mode": "time",
+                      "show": true,
+                      "values": []
+                    },
+                    "yaxes": [
+                      {
+                        "decimals": 1,
+                        "format": "short",
+                        "label": "Connections (rate)",
+                        "logBase": 1,
+                        "show": true
+                      },
+                      {
+                        "format": "short",
+                        "label": "",
+                        "logBase": 1,
+                        "show": true
+                      }
+                    ],
+                    "yaxis": {
+                      "align": false
+                    }
+                  }
+                }
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-12": {
+        "kind": "Panel",
+        "spec": {
+          "id": 12,
+          "title": "Active Connections",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "nginx_connections_active{instance=~\"$instance\"}",
+                        "format": "time_series",
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} active"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "nginx_connections_reading{instance=~\"$instance\"}",
+                        "format": "time_series",
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} reading"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "nginx_connections_waiting{instance=~\"$instance\"}",
+                        "format": "time_series",
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} waiting"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "nginx_connections_writing{instance=~\"$instance\"}",
+                        "format": "time_series",
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} writing"
+                      }
+                    },
+                    "refId": "D",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "",
+            "spec": {
+              "options": {
+                "__angularMigration": {
+                  "autoMigrateFrom": "graph",
+                  "originalOptions": {
+                    "aliasColors": {},
+                    "bars": false,
+                    "dashLength": 10,
+                    "dashes": false,
+                    "decimals": 0,
+                    "fill": 1,
+                    "legend": {
+                      "alignAsTable": false,
+                      "avg": false,
+                      "current": false,
+                      "max": false,
+                      "min": false,
+                      "rightSide": false,
+                      "show": true,
+                      "total": false,
+                      "values": false
+                    },
+                    "lines": true,
+                    "linewidth": 1,
+                    "nullPointMode": "null",
+                    "percentage": false,
+                    "pointradius": 2,
+                    "points": false,
+                    "renderer": "flot",
+                    "seriesOverrides": [],
+                    "spaceLength": 10,
+                    "stack": false,
+                    "steppedLine": false,
+                    "thresholds": [],
+                    "timeRegions": [],
+                    "tooltip": {
+                      "shared": true,
+                      "sort": 0,
+                      "value_type": "individual"
+                    },
+                    "xaxis": {
+                      "mode": "time",
+                      "show": true,
+                      "values": []
+                    },
+                    "yaxes": [
+                      {
+                        "decimals": 0,
+                        "format": "short",
+                        "label": "Connections",
+                        "logBase": 1,
+                        "show": true
+                      },
+                      {
+                        "format": "short",
+                        "logBase": 1,
+                        "show": true
+                      }
+                    ],
+                    "yaxis": {
+                      "align": false
+                    }
+                  }
+                }
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-15": {
+        "kind": "Panel",
+        "spec": {
+          "id": 15,
+          "title": "Total requests",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "irate(nginx_http_requests_total{instance=~\"$instance\"}[5m])",
+                        "format": "time_series",
+                        "intervalFactor": 1,
+                        "legendFormat": "{{instance}} total requests"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "",
+            "spec": {
+              "options": {
+                "__angularMigration": {
+                  "autoMigrateFrom": "graph",
+                  "originalOptions": {
+                    "aliasColors": {},
+                    "bars": false,
+                    "dashLength": 10,
+                    "dashes": false,
+                    "fill": 1,
+                    "legend": {
+                      "avg": false,
+                      "current": false,
+                      "max": false,
+                      "min": false,
+                      "show": true,
+                      "total": false,
+                      "values": false
+                    },
+                    "lines": true,
+                    "linewidth": 1,
+                    "nullPointMode": "null",
+                    "percentage": false,
+                    "pointradius": 2,
+                    "points": false,
+                    "renderer": "flot",
+                    "seriesOverrides": [],
+                    "spaceLength": 10,
+                    "stack": false,
+                    "steppedLine": false,
+                    "thresholds": [],
+                    "timeRegions": [],
+                    "tooltip": {
+                      "shared": true,
+                      "sort": 0,
+                      "value_type": "individual"
+                    },
+                    "xaxis": {
+                      "mode": "time",
+                      "show": true,
+                      "values": []
+                    },
+                    "yaxes": [
+                      {
+                        "format": "short",
+                        "logBase": 1,
+                        "show": true
+                      },
+                      {
+                        "format": "short",
+                        "logBase": 1,
+                        "show": true
+                      }
+                    ],
+                    "yaxis": {
+                      "align": false
+                    }
+                  }
+                }
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "id": 8,
+          "title": "NGINX Status for $instance",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "cfvng477ws45ce"
+                      },
+                      "spec": {
+                        "expr": "nginx_up{instance=~\"$instance\"}",
+                        "format": "time_series",
+                        "instant": false,
+                        "intervalFactor": 1
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 100
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "",
+            "spec": {
+              "options": {
+                "__angularMigration": {
+                  "autoMigrateFrom": "singlestat",
+                  "originalOptions": {
+                    "colorBackground": true,
+                    "colorPostfix": false,
+                    "colorPrefix": false,
+                    "colorValue": false,
+                    "colors": [
+                      "#E02F44",
+                      "#FF9830",
+                      "#299c46"
+                    ],
+                    "format": "none",
+                    "gauge": {
+                      "maxValue": 100,
+                      "minValue": 0,
+                      "show": false,
+                      "thresholdLabels": false,
+                      "thresholdMarkers": true
+                    },
+                    "mappingType": 1,
+                    "mappingTypes": [
+                      {
+                        "name": "value to text",
+                        "value": 1
+                      },
+                      {
+                        "name": "range to text",
+                        "value": 2
+                      }
+                    ],
+                    "nullPointMode": "connected",
+                    "postfix": "",
+                    "postfixFontSize": "50%",
+                    "prefix": "",
+                    "prefixFontSize": "50%",
+                    "rangeMaps": [
+                      {
+                        "from": "null",
+                        "text": "N/A",
+                        "to": "null"
+                      }
+                    ],
+                    "sparkline": {
+                      "fillColor": "rgba(31, 118, 189, 0.18)",
+                      "full": false,
+                      "lineColor": "rgb(31, 120, 193)",
+                      "show": false
+                    },
+                    "tableColumn": "",
+                    "thresholds": "1,1",
+                    "valueFontSize": "100%",
+                    "valueMaps": [
+                      {
+                        "op": "=",
+                        "text": "Down",
+                        "value": "0"
+                      },
+                      {
+                        "op": "=",
+                        "text": "Up",
+                        "value": "1"
+                      }
+                    ],
+                    "valueName": "current"
+                  }
+                }
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "RowsLayout",
+      "spec": {
+        "rows": [
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Status",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 3,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-8"
+                        },
+                        "repeat": {
+                          "mode": "variable",
+                          "value": "instance",
+                          "direction": "h"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Metrics",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-10"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 0,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-12"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 10,
+                        "width": 24,
+                        "height": 8,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-15"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [
+      "nginx",
+      "prometheus",
+      "nginx prometheus exporter"
+    ],
+    "timeSettings": {
+      "from": "now-15m",
+      "to": "now",
+      "autoRefresh": "5s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "NGINX exporter",
+    "variables": [
+      {
+        "kind": "DatasourceVariable",
+        "spec": {
+          "name": "DS_PROMETHEUS",
+          "pluginId": "prometheus",
+          "refresh": "onDashboardLoad",
+          "regex": "",
+          "current": {
+            "text": "default",
+            "value": "default"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "datasource",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "instance",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "cfvng477ws45ce"
+            },
+            "spec": {
+              "__legacyStringValue": "label_values(nginx_up, instance)"
+            }
+          },
+          "regex": "",
+          "sort": "disabled",
+          "definition": "label_values(nginx_up, instance)",
+          "options": [],
+          "multi": true,
+          "includeAll": true,
+          "allowCustomValue": true
+        }
+      }
+    ]
+  }
+}
