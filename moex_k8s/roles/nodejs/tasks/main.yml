@@ -71,6 +71,7 @@
       --name nodejs-app \
       --restart unless-stopped \
       -p {{ nodejs_port }}:{{ nodejs_port }} \
+      --network mystand-app-net \
       -v {{ nodejs_app_dir }}:/app \
       -v {{ ansible_playbook_dir }}:/ansible:ro \
       -e NODE_ENV=production \

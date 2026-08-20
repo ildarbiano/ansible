@@ -41,6 +41,8 @@
       --name tomcat \
       --restart unless-stopped \
       -p 8080:8080 \
+      -p 9010:9010 \
+      --network mystand-app-net \
       -v /opt/tomcat/webapps:/usr/local/tomcat/webapps \
       -v /opt/tomcat/logs:/usr/local/tomcat/logs \
       tomcat:9-jdk17

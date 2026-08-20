@@ -13,8 +13,9 @@
       --name nginx-exporter \
       --restart unless-stopped \
       -p 9113:9113 \
+      --network mystand-app-net \
       -v /opt/nginx/nginx.conf:/etc/nginx/nginx.conf:ro \
       nginx/nginx-prometheus-exporter:latest \
-      -nginx.scrape-uri=http://nginx:80/health
+      -nginx.scrape-uri=http://nginx:8081/stub_status
   register: docker_run
   changed_when: docker_run.rc == 0

@@ -48,3 +48,15 @@ server {
         add_header Content-Type text/plain;
     }
 }
+
+# Stub Status для Nginx Exporter
+server {
+    listen 8081;
+    server_name localhost;
+
+    location /stub_status {
+        stub_status;
+        access_log off;
+        allow all;
+    }
+}

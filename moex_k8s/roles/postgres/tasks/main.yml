@@ -29,6 +29,7 @@
       --name postgres \
       --restart unless-stopped \
       -p 5434:5432 \
+      --network mystand-app-net \
       -e POSTGRES_PASSWORD={{ postgres_password }} \
       -e POSTGRES_USER={{ postgres_user }} \
       -e POSTGRES_DB={{ postgres_db }} \

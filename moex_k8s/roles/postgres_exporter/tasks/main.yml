@@ -13,6 +13,7 @@
       --name postgres-exporter \
       --restart unless-stopped \
       -p 9187:9187 \
+      --network mystand-app-net \
       -e DATA_SOURCE_NAME="postgresql://{{ postgres_user }}:{{ vault_postgres_password }}@{{ ansible_host }}:5434/{{ postgres_db }}?sslmode=disable" \
       prometheuscommunity/postgres-exporter:latest
   register: docker_run
