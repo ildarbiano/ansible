@@ -62,8 +62,9 @@ curl http://192.168.0.44:9100/metrics | head -10
 curl http://192.168.0.66:9187/metrics | head -10
 # Node Exporter (должен работать)
 curl -s http://192.168.0.55:9100/metrics | head -5
-# Nginx Exporter
+# Nginx Exporter и логи Nginx Exporter:
 curl -s http://192.168.0.55:9113/metrics | head -5
+ansible k8s -m shell -a "docker logs nginx-exporter --tail 20"  --vault-password-file ~/.ansible_vault_pass
 # JMX Exporter (Tomcat)
 curl -s http://192.168.0.55:9010/metrics | head -5
 # Проверь Postgres Exporter на pgs:
