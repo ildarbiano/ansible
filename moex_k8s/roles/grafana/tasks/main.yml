@@ -10,6 +10,44 @@
     - /opt/grafana
     - /opt/grafana/data
     - /opt/grafana/provisioning
+    - /opt/grafana/provisioning/datasources
+    - /opt/grafana/provisioning/dashboards
+    - /opt/grafana/dashboards
+
+- name: Deploy datasource provisioning
+  copy:
+    dest: /opt/grafana/provisioning/datasources/prometheus.yml
+    content: |
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://{{ hostvars['mtrcs']['ansible_host'] }}:9090
+          isDefault: true
+    mode: '0644'
+
+- name: Deploy dashboard provider provisioning
+  copy:
+    dest: /opt/grafana/provisioning/dashboards/provider.yml
+    content: |
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          updateIntervalSeconds: 10
+          options:
+            path: /opt/grafana/dashboards
+    mode: '0644'
+
+- name: Copy dashboard json files
+  copy:
+    src: dashboards/
+    dest: /opt/grafana/dashboards/
+    mode: '0644'
 
 - name: Stop and remove existing grafana container if exists
   shell: |
@@ -25,9 +63,30 @@
       --restart unless-stopped \
       -p 3000:3000 \
       -v /opt/grafana/data:/var/lib/grafana \
+      -v /opt/grafana/provisioning:/etc/grafana/provisioning \
+      -v /opt/grafana/dashboards:/opt/grafana/dashboards \
       -u root \            
       -e GF_SECURITY_ADMIN_PASSWORD=admin \
       -e GF_INSTALL_PLUGINS=grafana-piechart-panel \
       grafana/grafana:latest
   register: docker_run
   changed_when: docker_run.rc == 0
+
+- name: Wait for Grafana to be ready
+  wait_for:
+    port: 3000
+    delay: 10
+    timeout: 60
+    host: "{{ ansible_default_ipv4.address }}"
+
+- name: Display Grafana status
+  debug:
+    msg: |
+      ========================================
+      ✅ Grafana successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      🔌 Port: 3000
+      🔑 Login: admin / admin
+      📊 Dashboards: /opt/grafana/dashboards
+      ========================================
