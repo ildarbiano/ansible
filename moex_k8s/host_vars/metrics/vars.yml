@@ -1,0 +1,2 @@
+static_ip: 192.168.0.34
+interface_name: enp0s3

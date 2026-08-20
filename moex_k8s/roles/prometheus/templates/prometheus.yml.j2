@@ -10,9 +10,21 @@ scrape_configs:
       - targets:
         - {{ hostvars['k8s']['ansible_host'] }}:9100
         - {{ hostvars['pgs']['ansible_host'] }}:9100
-        - {{ hostvars['monigen']['ansible_host'] }}:9100
+        - {{ hostvars['mtrcs']['ansible_host'] }}:9100
+        - {{ hostvars['gnld']['ansible_host'] }}:9100
+        - {{ hostvars['mngr']['ansible_host'] }}:9100
 
   - job_name: 'postgres_exporter'
     static_configs:
       - targets:
         - {{ hostvars['pgs']['ansible_host'] }}:9187
+
+  - job_name: 'nginx_exporter'
+    static_configs:
+      - targets:
+        - {{ hostvars['k8s']['ansible_host'] }}:9113
+
+  - job_name: 'jmx_exporter'
+    static_configs:
+      - targets:
+        - {{ hostvars['k8s']['ansible_host'] }}:9010

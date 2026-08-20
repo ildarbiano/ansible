@@ -1,0 +1,20 @@
+# roles/nginx_exporter/tasks/main.yml
+---
+- name: Stop and remove existing nginx-exporter container if exists
+  shell: |
+    docker stop nginx-exporter 2>/dev/null || true
+    docker rm nginx-exporter 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run Nginx Exporter container
+  shell: |
+    docker run -d \
+      --name nginx-exporter \
+      --restart unless-stopped \
+      -p 9113:9113 \
+      -v /opt/nginx/nginx.conf:/etc/nginx/nginx.conf:ro \
+      nginx/nginx-prometheus-exporter:latest \
+      -nginx.scrape-uri=http://nginx:80/health
+  register: docker_run
+  changed_when: docker_run.rc == 0

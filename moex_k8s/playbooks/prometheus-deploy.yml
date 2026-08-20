@@ -1,4 +1,4 @@
-# playbooks/monitoring-deploy.yml
+# playbooks/prometheus-deploy.yml
 ---
 - name: Deploy monitoring stack
   hosts: all
@@ -6,6 +6,7 @@
   gather_facts: yes
   vars_files:
     - ../group_vars/dev/vault.yml
+# playbooks/prometheus-deploy.yml
   
   roles:
     - docker_setup
@@ -23,8 +24,29 @@
   roles:
     - postgres_exporter
 
-- name: Deploy Prometheus on monigen
-  hosts: monigen
+- name: Deploy Nginx Exporter on k8s
+  hosts: k8s
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - nginx_exporter
+
+- name: Deploy JMX Exporter on k8s (Tomcat)
+  hosts: k8s
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+    - ../host_vars/k8s/vars.yml
+
+  roles:
+    - jmx_exporter
+
+- name: Deploy Prometheus on metrics
+  hosts: mtrcs
   become: yes
   gather_facts: yes
   vars_files:
@@ -32,14 +54,3 @@
 
   roles:
     - prometheus
-
-- name: Deploy Grafana on monigen
-  hosts: monigen
-  become: yes
-  gather_facts: yes
-  vars_files:
-    - ../group_vars/dev/vault.yml
-
-  roles:
-    - grafana
-

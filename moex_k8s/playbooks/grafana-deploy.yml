@@ -1,0 +1,13 @@
+# playbooks/grafana-deploy.yml
+---
+- name: Deploy Grafana on monigen
+  hosts: mngr
+  become: yes
+  gather_facts: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - docker_setup
+    - grafana
+
