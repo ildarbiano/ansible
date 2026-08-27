@@ -200,7 +200,7 @@ JPA/Hibernate делает всю работу за кулисами:
 <<< Ты просишь список → JPA достаёт из БД и превращает в Java-объекты
 
 
-====================== Deploy =============================
+====================== Deploy в контейнер Tomcat =============================
 mkdir files
 touch playbooks/application-deploy.yml
 ansible-playbook playbooks/application-deploy.yml \
@@ -246,7 +246,6 @@ ansible k8s -m shell \
 -a "docker exec tomcat find /usr/local/tomcat/webapps/ROOT/WEB-INF/classes -name '*.class' | grep -i backend" \
 --vault-password-file ~/.ansible_vault_pass
 #  Проверь, что внутри ROOT есть классы:
-bash
 ansible k8s -m shell \
 -a "docker exec tomcat ls -la /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/" \
 --vault-password-file ~/.ansible_vault_pass
@@ -271,17 +270,38 @@ ansible k8s -m shell \
 -a "docker exec tomcat ls -la /usr/local/tomcat/webapps/ROOT/WEB-INF/lib/ | grep spring" \
 -i inventories/dev/hosts.yml \
 --vault-password-file ~/.ansible_vault_pass
+# Проверь, что Spring Boot запускается через docker logs с более детальным выводом:
+ansible k8s -m shell \
+-a "docker logs tomcat 2>&1 | grep -i 'exception\|error\|failed'" \
+--vault-password-file ~/.ansible_vault_pass
+
+
+#### порт, port ###########
 # Проверь, что приложение слушает на порту 8080:
-bash
 ansible k8s -m shell \
 -a "docker exec tomcat curl -s http://localhost:8080/actuator/health" \
 -i inventories/dev/hosts.yml \
 --vault-password-file ~/.ansible_vault_pass
-# Проверь, что Spring Boot запускается через docker logs с более детальным выводом:
-bash
+# Проверь, что приложение доступно через порт 8080 (не 8081):
+# Проверь, что приложение доступно изнутри Tomcat через localhost:
 ansible k8s -m shell \
--a "docker logs tomcat 2>&1 | grep -i 'exception\|error\|failed'" \
+-a "docker exec tomcat wget -q -O- http://localhost:8080/health 2>&1 || echo 'wget failed'" \
 --vault-password-file ~/.ansible_vault_pass
+# Проверь, что приложение слушает порт внутри контейнера:
+ansible k8s -m shell \
+-a "docker exec tomcat netstat -tlnp 2>/dev/null || ss -tlnp" \
+--vault-password-file ~/.ansible_vault_pass
+
+### Tomcat
+# Проверь, что Tomcat развернул приложение правильно:
+ansible k8s -m shell \
+-a "docker exec tomcat cat /usr/local/tomcat/conf/server.xml | grep -i 'port'" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что Spring Boot запустился внутри Tomcat:
+ansible k8s -m shell \
+-a "docker logs tomcat 2>&1 | grep -i 'started\|application'" \
+--vault-password-file ~/.ansible_vault_pass
+
 ##### ЗАПУСК jar
 # Проверь, что приложение запускается напрямую через JAR:
 bash
@@ -363,3 +383,33 @@ ansible k8s -m shell \
 ansible k8s -m shell -a "docker exec tomcat nslookup postgres" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
 # Проверь, что приложение работает через /api/health:
 curl -k https://192.168.0.55/api/health
+
+
+============= Приложение в отдельном контейнере ================================
+┌─────────────────────────────────────────────────────────────────┐
+│                    Сеть mystand-app-net                         │
+│  ┌─────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
+│  │  Nginx  │  │  Tomcat  │  │   App    │  │ Postgres │          │
+│  │  :443   │  │  :8080   │  │  :8081   │  │  :5432   │          │
+│  └─────────┘  └──────────┘  └──────────┘  └──────────┘          │
+│                                                                 │
+│  Nginx → App (8081)                                             │
+└─────────────────────────────────────────────────────────────────┘
+# Проверь, что PostgreSQL доступен из контейнера backend:
+ansible k8s -m shell -a "docker exec backend ping -c 2 postgres" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+#
+ansible k8s -m shell -a "docker ps -a | grep backend" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+#
+ansible k8s -m shell -a "docker logs backend --tail 50" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+#
+ansible k8s -m shell -a "docker inspect backend | grep -i 'networkmode'" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+# логи
+ansible k8s -m shell -a "docker logs backend --tail 30" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+# posgres psql
+ansible pgs -m shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -c '\dt'" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+
+
+#### Postgres =====================
+ansible pgs -m shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -c '\dt'" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+# Проверь, что таблица пустая, но существует
+ansible pgs -m shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -c '\d first_pastman_req'" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass

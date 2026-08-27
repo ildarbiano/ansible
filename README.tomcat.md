@@ -27,7 +27,7 @@ cat > playbooks/tomcat-deploy.yml << 'EOF'
 # Шаг 4: Запускаем Tomcat
 bash
 ansible-playbook playbooks/tomcat-deploy.yml \
-	--vault-password-file ~/.ansible_vault_pass -v
+--vault-password-file ~/.ansible_vault_pass -v
 
 # Шаг 5: Проверяем Tomcat
 bash
@@ -52,8 +52,8 @@ ansible k8s -m shell \
 # 1. Проверяем, что контейнер Tomcat вообще видит хост pgs (через DNS или IP)
 bash
 ansible k8s -m shell \
-	-a "docker exec tomcat cat /etc/hosts" \
-	--vault-password-file ~/.ansible_vault_pass
+-a "docker exec tomcat cat /etc/hosts" \
+--vault-password-file ~/.ansible_vault_pass
 # 2. Проверяем, что порт 5434 доступен из контейнера (через bash и curl)
 bash
 ansible k8s -m shell -a "docker exec tomcat bash -c 'timeout 3 bash -c \
@@ -64,7 +64,9 @@ ansible k8s -m shell -a "docker exec tomcat bash -c 'timeout 3 bash -c \
 	--vault-password-file ~/.ansible_vault_pass
 # 4. Проверяем доступность хоста pgs с самого хоста k8s
 bash
-ansible k8s -m shell -a "ping -c 2 192.168.0.66" --vault-password-file ~/.ansible_vault_pass
+ansible k8s -m shell \
+-a "ping -c 2 192.168.0.66" \
+--vault-password-file ~/.ansible_vault_pass
 	
 =====	Настраиваем Nginx как Reverse Proxy для Tomcat
 # Обновим конфигурацию Nginx, добавив проксирование на Tomcat:
@@ -81,7 +83,6 @@ ansible-playbook playbooks/nginx-deploy.yml -i \
  
  
 ### Проверяем доступ к Tomcat через Nginx (корневой путь)
-
 #	Проверяем API Tomcat через Nginx
 https://192.168.0.55/api/
 # Проверяем напрямую Tomcat (минуя Nginx) корень Tomcat
