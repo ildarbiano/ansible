@@ -1,50 +1,62 @@
 # playbooks/application-deploy.yml
 ---
-- name: Deploy Java application to Tomcat
+- name: Deploy Java application
   hosts: k8s
   become: yes
   vars_files:
     - ../group_vars/dev/vault.yml
+    - ../host_vars/pgs/vars.yml
 
   tasks:
-    - name: Stop Tomcat
-      shell: docker stop tomcat || true
-      ignore_errors: yes
-
-    - name: Remove old ROOT.war
+    - name: Create application directory
       file:
-        path: /opt/tomcat/webapps/ROOT.war
-        state: absent
+        path: /opt/backend
+        state: directory
+        mode: '0755'
 
-    - name: Remove old ROOT directory
-      file:
-        path: /opt/tomcat/webapps/ROOT
-        state: absent
-
-    - name: Copy new ROOT.war
+    - name: Copy ROOT.war
       copy:
         src: ../files/ROOT.war
-        dest: /opt/tomcat/webapps/ROOT.war
+        dest: /opt/backend/app.war
         mode: '0644'
 
-    - name: Start Tomcat
-      shell: docker start tomcat
+    - name: Stop and remove existing backend container
+      shell: |
+        docker stop backend 2>/dev/null || true
+        docker rm backend 2>/dev/null || true
       ignore_errors: yes
+      changed_when: false
 
-    - name: Wait for Tomcat to be ready
+    - name: Run backend container
+      shell: |
+        docker run -d \
+          --name backend \
+          --restart unless-stopped \
+          -p 8081:8081 \
+          --network mystand-app-net \
+          -v /opt/backend/app.war:/app.war \
+          -e SPRING_DATASOURCE_URL=jdbc:postgresql://192.168.0.66:5432/dtbase_1 \
+          -e SPRING_DATASOURCE_USERNAME={{ postgres_user }} \
+          -e SPRING_DATASOURCE_PASSWORD={{ vault_postgres_password }} \
+          -e SERVER_PORT=8081 \
+          eclipse-temurin:17-jre-alpine \
+          java -jar /app.war
+      register: docker_run
+      changed_when: docker_run.rc == 0
+
+    - name: Wait for backend to be ready
       wait_for:
-        port: 8080
-        delay: 10
+        port: 8081
+        delay: 15
         timeout: 120
         host: "{{ ansible_default_ipv4.address }}"
 
     - name: Test application health
       uri:
-        url: "https://{{ ansible_default_ipv4.address }}/api/health"
-        validate_certs: no
+        url: "http://{{ ansible_default_ipv4.address }}:8081/api/health"
         status_code: 200
       register: health_check
-      retries: 5
+      retries: 10
       delay: 10
       until: health_check.status == 200
 
@@ -55,6 +67,6 @@
           ✅ Application successfully deployed!
           ========================================
           📍 Host: {{ ansible_default_ipv4.address }}
-          🔗 Health: https://{{ ansible_default_ipv4.address }}/api/health
-          📊 API: https://{{ ansible_default_ipv4.address }}/api/data
+          🔗 Health: http://{{ ansible_default_ipv4.address }}:8081/api/health
+          📊 API: http://{{ ansible_default_ipv4.address }}:8081/api/data
           ========================================
