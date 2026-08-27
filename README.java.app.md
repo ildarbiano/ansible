@@ -201,6 +201,18 @@ JPA/Hibernate делает всю работу за кулисами:
 
 
 ====================== Deploy =============================
+mkdir files
+touch playbooks/application-deploy.yml
+ansible-playbook playbooks/application-deploy.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что приложение действительно развернулось:
+bash
+ansible k8s -m shell -a "docker exec tomcat ls -la /usr/local/tomcat/webapps/" \
+-i inventories/dev/hosts.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Логи
+ansible k8s -m shell -a "docker logs tomcat --tail 20" \
+--vault-password-file ~/.ansible_vault_pass
 
 
 
