@@ -210,9 +210,156 @@ bash
 ansible k8s -m shell -a "docker exec tomcat ls -la /usr/local/tomcat/webapps/" \
 -i inventories/dev/hosts.yml \
 --vault-password-file ~/.ansible_vault_pass
-# Логи
+##### Logs ##############
+# Логи. В контейнере Tomcat настроен на ротацию логов через catalina.YYYY-MM-DD.log, а catalina.out отключён (это часто делают в Docker-контейнерах, чтобы логи не забивали диск и управлялись через docker logs).
 ansible k8s -m shell -a "docker logs tomcat --tail 20" \
+--vault-password-file ~/.ansible_vault_pass
+# какие логи Spring Boot есть:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat ls -la /usr/local/tomcat/logs/" \
+-i inventories/dev/hosts.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Логи через docker logs (самый надёжный способ):
+bash
+ansible k8s -m shell \
+-a "docker logs tomcat 2>&1 | tail -50" \
+--vault-password-file ~/.ansible_vault_pass
+---------
+ansible k8s -m shell \
+-a "docker logs tomcat 2>&1 | grep -i 'started\|exception\|error' | tail -30" \
+--vault-password-file ~/.ansible_vault_pass
+# логи Spring Boot в Tomcat:
+ansible k8s -m shell \
+-a "docker exec tomcat cat /usr/local/tomcat/logs/catalina.out | grep -i 'spring\|started\|error' | tail -30" \
+-i inventories/dev/hosts.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Логи на сегодня
+ansible k8s -m shell \
+-a "docker exec tomcat cat /usr/local/tomcat/logs/catalina.2026-08-27.log | tail -50" \
+--vault-password-file ~/.ansible_vault_pass
+
+###### Проверить #################
+# Проверь, что Main класс есть:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat find /usr/local/tomcat/webapps/ROOT/WEB-INF/classes -name '*.class' | grep -i backend" \
+--vault-password-file ~/.ansible_vault_pass
+#  Проверь, что внутри ROOT есть классы:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat ls -la /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/" \
+--vault-password-file ~/.ansible_vault_pass
+-------------
+ansible k8s -m shell \
+-a "docker exec tomcat find /usr/local/tomcat/webapps/ROOT/WEB-INF/classes -name '*.class' | head -20" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь структуру внутри WAR:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat ls -la /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/k8s/" \
+-i inventories/dev/hosts.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что класс BackendApplication есть в нужном месте:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat ls -la /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/k8s/api/" \
+--vault-password-file ~/.ansible_vault_pass
+# проверь, что в WAR есть Spring Boot:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat ls -la /usr/local/tomcat/webapps/ROOT/WEB-INF/lib/ | grep spring" \
+-i inventories/dev/hosts.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что приложение слушает на порту 8080:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat curl -s http://localhost:8080/actuator/health" \
+-i inventories/dev/hosts.yml \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что Spring Boot запускается через docker logs с более детальным выводом:
+bash
+ansible k8s -m shell \
+-a "docker logs tomcat 2>&1 | grep -i 'exception\|error\|failed'" \
+--vault-password-file ~/.ansible_vault_pass
+##### ЗАПУСК jar
+# Проверь, что приложение запускается напрямую через JAR:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat java -jar /usr/local/tomcat/webapps/ROOT.war --server.port=8081 &" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что java -jar действительно запускается с выводом:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat timeout 10 java -jar /usr/local/tomcat/webapps/ROOT.war --server.port=8081 2>&1 | head -50" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что в application.properties нет ошибок:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat cat /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/application.properties" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что приложение слушает порт:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat netstat -tlnp | grep -E '8080|8081'" \
+--vault-password-file ~/.ansible_vault_pass
+------------
+ansible k8s -m shell \
+-a "docker exec tomcat curl -s http://localhost:8081/health" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что приложение запускается и сразу падает:
+bash
+ansible k8s -m shell \
+-a "docker exec tomcat sh -c 'java -jar /usr/local/tomcat/webapps/ROOT.war --server.port=8081 2>&1 & sleep 5; ps aux | grep java'" \
 --vault-password-file ~/.ansible_vault_pass
 
 
+##### запуск приложения напрямую через JAR (без Tomcat):
+ansible k8s -m shell \
+-a "docker exec tomcat timeout 15 java -jar /usr/local/tomcat/webapps/ROOT.war 2>&1 | grep -i 'started\|error'" \
+--vault-password-file ~/.ansible_vault_pass
 
+
+##### Проверки к Postgres #############################
+# Проверь доступность PostgreSQL из контейнера Tomcat:
+bash
+# Проверь, что порт 5434 доступен из контейнера
+ansible k8s -m shell \
+-a "docker exec tomcat nc -zv 192.168.0.66 5434" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что PostgreSQL отвечает
+ansible k8s -m shell \
+-a "docker exec tomcat curl -s http://192.168.0.66:5434" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь, что контейнеры в одной сети:
+# Проверь сеть у Tomcat
+ansible k8s -m shell \
+-a "docker inspect tomcat | grep -i 'networkmode'" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь сеть у PostgreSQL
+ansible pgs -m shell \
+-a "docker inspect postgres | grep -i 'networkmode'" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь доступность PostgreSQL
+ansible k8s -m shell \
+-a "docker exec tomcat ping -c 2 postgres" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь доступность PostgreSQL другим способом:
+# 1. Проверь через psql клиент (если есть):
+ansible k8s -m shell \
+-a "docker exec tomcat psql -h postgres -U ilya-ansible -d dtbase_1 -c 'SELECT 1'" \
+--vault-password-file ~/.ansible_vault_pass
+# 2. Проверь через wget или curl (если есть):
+ansible k8s -m shell \
+-a "docker exec tomcat curl -s http://postgres:5434" \
+--vault-password-file ~/.ansible_vault_pass
+# 3. Проверь через nc (если есть):
+ansible k8s -m shell -a "docker exec tomcat nc -zv postgres 5432" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+# 4. Проверь через getent (есть почти везде):
+ansible k8s -m shell \
+-a "docker exec tomcat getent hosts postgres" \
+--vault-password-file ~/.ansible_vault_pass
+# 5. Проверь через nslookup:
+ansible k8s -m shell -a "docker exec tomcat nslookup postgres" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+# Проверь, что приложение работает через /api/health:
+curl -k https://192.168.0.55/api/health

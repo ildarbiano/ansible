@@ -32,9 +32,20 @@ ssh-copy-id ilya@192.168.0.44
 Введи пароль пользователя ilya на хосте gnld, когда запросит
 # Проверь что ключ установлен на удаленном хосте
 ssh ilya@192.168.0.44 "echo 'SSH works'"
-# Проверь сеть:
-ansible k8s -m shell -a "docker network ls | grep app-net" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
 
+##### Сети ============
+# Проверь сеть:
+ansible k8s -m shell \
+-a "docker network ls | grep app-net" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь сеть
+ansible k8s -m shell \
+-a "docker inspect tomcat | grep -i 'networkmode'" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь доступность PostgreSQL
+ansible k8s -m shell \
+-a "docker exec tomcat ping -c 2 postgres" \
+--vault-password-file ~/.ansible_vault_pass
 
 # Показать все контейнеры с сетями
 docker ps --format "table {{.Names}}\t{{.Networks}}"
