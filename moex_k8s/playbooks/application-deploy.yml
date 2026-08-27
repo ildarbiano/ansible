@@ -1,0 +1,60 @@
+# playbooks/application-deploy.yml
+---
+- name: Deploy Java application to Tomcat
+  hosts: k8s
+  become: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  tasks:
+    - name: Stop Tomcat
+      shell: docker stop tomcat || true
+      ignore_errors: yes
+
+    - name: Remove old ROOT.war
+      file:
+        path: /opt/tomcat/webapps/ROOT.war
+        state: absent
+
+    - name: Remove old ROOT directory
+      file:
+        path: /opt/tomcat/webapps/ROOT
+        state: absent
+
+    - name: Copy new ROOT.war
+      copy:
+        src: ../files/ROOT.war
+        dest: /opt/tomcat/webapps/ROOT.war
+        mode: '0644'
+
+    - name: Start Tomcat
+      shell: docker start tomcat
+      ignore_errors: yes
+
+    - name: Wait for Tomcat to be ready
+      wait_for:
+        port: 8080
+        delay: 10
+        timeout: 120
+        host: "{{ ansible_default_ipv4.address }}"
+
+    - name: Test application health
+      uri:
+        url: "https://{{ ansible_default_ipv4.address }}/api/health"
+        validate_certs: no
+        status_code: 200
+      register: health_check
+      retries: 5
+      delay: 10
+      until: health_check.status == 200
+
+    - name: Display deployment status
+      debug:
+        msg: |
+          ========================================
+          ✅ Application successfully deployed!
+          ========================================
+          📍 Host: {{ ansible_default_ipv4.address }}
+          🔗 Health: https://{{ ansible_default_ipv4.address }}/api/health
+          📊 API: https://{{ ansible_default_ipv4.address }}/api/data
+          ========================================
