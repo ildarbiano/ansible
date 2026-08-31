@@ -37,9 +37,21 @@ ssh ilya@192.168.0.44 "echo 'SSH works'"
 ansible k8s -m shell \
 -a "docker network ls | grep app-net" \
 --vault-password-file ~/.ansible_vault_pass
-# Проверь сеть
+# Проверь, какие контейнеры в сети app-net:
+ansible k8s -m shell \
+-a "docker network inspect app-net | grep -E 'Name|Endpoint' | head -20" \
+--vault-password-file ~/.ansible_vault_pass
+#
+ansible k8s -m shell \
+-a "docker network inspect mystand-app-net | grep -E 'Name|Endpoint' | head -30" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь сеть для приложения вывод №1
 ansible k8s -m shell \
 -a "docker inspect tomcat | grep -i 'networkmode'" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь сеть для приложения вывод №2
+ansible k8s -m shell \
+-a "docker inspect nginx | grep -A 5 'NetworkSettings'" \
 --vault-password-file ~/.ansible_vault_pass
 # Проверь доступность PostgreSQL
 ansible k8s -m shell \

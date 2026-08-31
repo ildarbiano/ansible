@@ -53,6 +53,12 @@ GRANT ALL PRIVILEGES ON DATABASE dtbase_1 TO ilya-ansible;
 # Как быстро проверить, где вообще есть psql
 which psql
 find / -name psql 2>/dev/null
+# список файлов, где есть упоминание
+find ~/ansible/moex_k8s -type f \
+-name "*.yml" -o -name "*.yaml" -o -name "*.j2" | xargs grep -l "app-net" 2>/dev/null
+# список файлов, где есть упоминание, но с выводом строки - удобней и наглядней
+grep -r \
+"app-net" ~/ansible/moex_k8s --include="*.yml" --include="*.yaml" --include="*.j2" 2>/dev/null
 # варианты, как быстро получить psql
 apt-get update
 apt-get install -y postgresql-client

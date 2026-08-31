@@ -2,6 +2,10 @@
 /api/db/health	GET	Проверка подключения к БД	Проверочный
 
 # 2. Структура таблиц PostgreSQL (Схема данных)
+# Проверь структуру таблицы:
+ansible pgs -m \
+shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -c '\d first_pastman_req'" \
+--vault-password-file ~/.ansible_vault_pass
 Мы создадим две таблицы. Эту схему мы применим через миграцию (Liquibase или Flyway), либо 
 просто выполним SQL скрипт при первом старте приложения через Spring Boot (spring.jpa.hibernate.ddl-auto=update).
 Для простоты пока используем update, чтобы не усложнять на первом этапе.
@@ -198,7 +202,9 @@ JPA/Hibernate делает всю работу за кулисами:
     Создание таблиц — по аннотациям в RequestData.java
 >>> даёшь Java-объект → JPA сохраняет его в БД
 <<< Ты просишь список → JPA достаёт из БД и превращает в Java-объекты
-
+# Запуск playbook
+ansible-playbook playbooks/application-deploy.yml \
+--vault-password-file ~/.ansible_vault_pass
 
 ====================== Deploy в контейнер Tomcat =============================
 mkdir files
@@ -213,6 +219,14 @@ ansible k8s -m shell -a "docker exec tomcat ls -la /usr/local/tomcat/webapps/" \
 ##### Logs ##############
 # Логи. В контейнере Tomcat настроен на ротацию логов через catalina.YYYY-MM-DD.log, а catalina.out отключён (это часто делают в Docker-контейнерах, чтобы логи не забивали диск и управлялись через docker logs).
 ansible k8s -m shell -a "docker logs tomcat --tail 20" \
+--vault-password-file ~/.ansible_vault_pass
+# хвост лога приложения backend
+ansible k8s -m shell \
+-a "docker logs backend --tail 30" \
+--vault-password-file ~/.ansible_vault_pass
+# поиск ошибок в полном логи приложения backend
+ansible k8s -m shell \
+-a "docker logs backend 2>&1 | grep -i 'exception\|error' | tail -30" \
 --vault-password-file ~/.ansible_vault_pass
 # какие логи Spring Boot есть:
 bash
@@ -413,3 +427,21 @@ ansible pgs -m shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -
 ansible pgs -m shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -c '\dt'" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
 # Проверь, что таблица пустая, но существует
 ansible pgs -m shell -a "docker exec postgres psql -U ilya-ansible -d dtbase_1 -c '\d first_pastman_req'" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+
+#### 1. Проверь  через Nginx:
+bash
+curl -k https://192.168.0.55/api/health
+Должно вернуть:
+json
+{"status":"UP","database":"connected"}
+# 2. Проверь API через Nginx:
+# GET /api/data (список записей)
+curl -k https://192.168.0.55/api/data
+# 3. Проверь POST через Nginx:
+# POST /api/data (создать запись)
+curl -k -X POST https://192.168.0.55/api/data \
+  -H "Content-Type: application/json" \
+  -d '{"id": 1, "value": "test", "timestamp": "2026-08-31T12:00:00"}'
+# 4. Проверь, что Nginx проксирует правильно:
+# Проверь логи Nginx
+ansible k8s -m shell -a "docker logs nginx --tail 10" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass

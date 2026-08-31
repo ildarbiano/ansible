@@ -69,6 +69,13 @@ curl -k https://192.168.0.55/ui/
 # Tomcat через HTTP https://192.168.0.55/S (корень)
 curl -k https://192.168.0.55/api/
 	https://192.168.0.55/api/
-# health через HTTPS
+# health nginx через HTTPS
 curl -k https://192.168.0.55/health
 	https://192.168.0.55/health
+
+###### Проверь статус Nginx: ############################
+ansible k8s -m shell -a "docker ps -a | grep nginx" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверь логи Nginx:
+ansible k8s -m shell -a "docker logs nginx --tail 20" \
+--vault-password-file ~/.ansible_vault_pass
