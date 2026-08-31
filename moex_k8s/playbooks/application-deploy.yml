@@ -35,7 +35,7 @@
           -p 8081:8081 \
           --network mystand-app-net \
           -v /opt/backend/app.war:/app.war \
-          -e SPRING_DATASOURCE_URL=jdbc:postgresql://192.168.0.66:5432/dtbase_1 \
+          -e SPRING_DATASOURCE_URL=jdbc:postgresql://{{ static_ip }}:{{ postgres_port }}/{{ postgres_db }} \
           -e SPRING_DATASOURCE_USERNAME={{ postgres_user }} \
           -e SPRING_DATASOURCE_PASSWORD={{ vault_postgres_password }} \
           -e SERVER_PORT=8081 \
@@ -59,6 +59,11 @@
       retries: 10
       delay: 10
       until: health_check.status == 200
+
+    - name: Restart Nginx to update upstream
+      shell: docker restart nginx
+      ignore_errors: yes
+      changed_when: false
 
     - name: Display deployment status
       debug:

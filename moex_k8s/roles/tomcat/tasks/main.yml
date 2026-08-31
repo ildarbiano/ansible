@@ -12,19 +12,10 @@
     - /opt/tomcat/logs
     - /opt/tomcat/conf
 
-- name: Create test index.html for Tomcat
-  copy:
+- name: Deploy index.html from template
+  template:
+    src: index.html.j2
     dest: /opt/tomcat/webapps/ROOT/index.html
-    content: |
-      <!DOCTYPE html>
-      <html>
-      <head><title>Tomcat on k8s</title></head>
-      <body>
-          <h1>✅ Tomcat is running on k8s host!</h1>
-          <p>Host: {{ ansible_default_ipv4.address }}</p>
-          <p>Deployed by Ansible</p>
-      </body>
-      </html>
     mode: '0644'
   notify: restart tomcat
 

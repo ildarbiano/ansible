@@ -48,7 +48,6 @@
       --restart unless-stopped \
       -p 80:80 \
       -p 443:443 \
-      -p 8081:8081 \
       --network mystand-app-net \
       -v /opt/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
       -v /opt/nginx/ssl:/etc/nginx/ssl:ro \

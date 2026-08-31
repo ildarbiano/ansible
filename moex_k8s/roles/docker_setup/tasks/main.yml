@@ -7,6 +7,13 @@
   changed_when: false
   ignore_errors: yes
 
+- name: Remove old "app-net" network if exists
+  shell: |
+    docker network rm app-net 2>/dev/null || true
+  register: network_remove
+  changed_when: network_remove.rc == 0
+  ignore_errors: yes
+
 - name: Install Docker and dependencies
   block:
     - name: Update apt cache
