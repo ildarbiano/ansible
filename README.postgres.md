@@ -90,6 +90,19 @@ psql -h <IP_контейнера_или_хоста> -p <порт> -U ilya-ansibl
 #  посмотри переменные окружения контейнера:
 docker exec postgres env | grep POSTGRES
 
-
-
+#### =====================
+### через Application POST
+curl -k -X POST https://192.168.0.55/api/data \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": 1, "value": "test_data_1", "timestamp": "2026-08-31T12:00:00"}'
+### через Application GET
+ansible pgs -m shell \
+-a "docker exec postgres psql \
+-U ilya-ansible \
+-d dtbase_1 \
+-c 'SELECT id, method, data, response_time_ms FROM first_pastman_req ORDER BY id DESC LIMIT 5;'" \
+--vault-password-file ~/.ansible_vault_pass
+# посчитать количество записей
+curl -k https://192.168.0.55/api/data/count
+curl -k https://192.168.0.55/api/data
 
