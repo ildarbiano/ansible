@@ -19,6 +19,7 @@
         src: ../files/ROOT.war
         dest: /opt/backend/app.war
         mode: '0644'
+        force: yes
 
     - name: Stop and remove existing backend container
       shell: |
