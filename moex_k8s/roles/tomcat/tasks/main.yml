@@ -12,12 +12,14 @@
     - /opt/tomcat/logs
     - /opt/tomcat/conf
 
+
 - name: Deploy index.html from template
   template:
     src: index.html.j2
     dest: /opt/tomcat/webapps/ROOT/index.html
     mode: '0644'
   notify: restart tomcat
+
 
 - name: Stop and remove existing Tomcat container if exists
   shell: |
@@ -26,7 +28,8 @@
   ignore_errors: yes
   changed_when: false
 
-- name: Run Tomcat container
+
+- name: Run Tomcat container with JMX-exporter
   shell: |
     docker run -d \
       --name tomcat \
@@ -36,6 +39,9 @@
       --network mystand-app-net \
       -v /opt/tomcat/webapps:/usr/local/tomcat/webapps \
       -v /opt/tomcat/logs:/usr/local/tomcat/logs \
+      -v /opt/jmx_exporter/jmx_prometheus_javaagent.jar:/usr/local/tomcat/lib/jmx_prometheus_javaagent.jar \
+      -v /opt/jmx_exporter/config.yml:/usr/local/tomcat/conf/jmx_exporter_config.yml \
+      -e CATALINA_OPTS="-javaagent:/usr/local/tomcat/lib/jmx_prometheus_javaagent.jar=9010:/usr/local/tomcat/conf/jmx_exporter_config.yml" \
       tomcat:9-jdk17
   register: docker_run
   changed_when: docker_run.rc == 0
@@ -47,12 +53,14 @@
     timeout: 120
     host: "{{ ansible_default_ipv4.address }}"
 
+
 - name: Test Tomcat health
   uri:
     url: "http://{{ ansible_default_ipv4.address }}:8080"
     status_code: 200
   register: tomcat_test
   ignore_errors: yes
+
 
 - name: Display Tomcat status
   debug:

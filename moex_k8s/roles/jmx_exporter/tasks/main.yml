@@ -6,11 +6,13 @@
     state: directory
     mode: '0755'
 
+
 - name: Download jmx_exporter jar
   get_url:
     url: https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/1.0.1/jmx_prometheus_javaagent-1.0.1.jar
     dest: /opt/jmx_exporter/jmx_prometheus_javaagent.jar
     mode: '0644'
+
 
 - name: Deploy jmx_exporter config (without hostPort for javaagent mode)
   copy:
@@ -24,44 +26,3 @@
         - pattern: ".*"
     mode: '0644'
 
-- name: Stop and remove existing tomcat container if exists
-  shell: |
-    docker stop tomcat 2>/dev/null || true
-    docker rm tomcat 2>/dev/null || true
-  ignore_errors: yes
-  changed_when: false
-
-- name: Run Tomcat container with jmx_exporter
-  shell: |
-    docker run -d \
-      --name tomcat \
-      --restart unless-stopped \
-      -p 8080:8080 \
-      -p 9010:9010 \
-      -v /opt/tomcat/webapps:/usr/local/tomcat/webapps \
-      -v /opt/tomcat/logs:/usr/local/tomcat/logs \
-      -v /opt/jmx_exporter/jmx_prometheus_javaagent.jar:/usr/local/tomcat/lib/jmx_prometheus_javaagent.jar \
-      -v /opt/jmx_exporter/config.yml:/usr/local/tomcat/conf/jmx_exporter_config.yml \
-      -e CATALINA_OPTS="-javaagent:/usr/local/tomcat/lib/jmx_prometheus_javaagent.jar=9010:/usr/local/tomcat/conf/jmx_exporter_config.yml" \
-      tomcat:9-jdk17
-  register: docker_run
-  changed_when: docker_run.rc == 0
-
-- name: Wait for Tomcat to be ready
-  wait_for:
-    port: 8080
-    delay: 10
-    timeout: 180
-    host: "{{ ansible_default_ipv4.address }}"
-  ignore_errors: yes
-
-- name: Display JMX Exporter status
-  debug:
-    msg: |
-      ========================================
-      ✅ JMX Exporter for Tomcat deployed!
-      ========================================
-      📍 Host: {{ ansible_default_ipv4.address }}
-      🔌 JMX Port: 9010
-      📊 Metrics: http://{{ ansible_default_ipv4.address }}:9010/metrics
-      ========================================
