@@ -25,7 +25,6 @@ bash
 cat > playbooks/tomcat-deploy.yml << 'EOF'
 ---
 # Шаг 4: Запускаем Tomcat
-bash
 ansible-playbook playbooks/tomcat-deploy.yml \
 --vault-password-file ~/.ansible_vault_pass -v
 
