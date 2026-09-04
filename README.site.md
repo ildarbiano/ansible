@@ -73,21 +73,7 @@ grep -r "app-net" --include="*.yml" --include="*.j2" .
 docker network inspect mystand-app-net --format='{{range .Containers}}{{.Name}} {{end}}'
 
 
-### MD5 ####
-md5sum files/ROOT.war
-# PowerShell
-PS C:\app\simple_java_bridge> 
-Get-FileHash -Path .\target\ROOT.war -Algorithm MD5
-# PowerShell маленькими буквами
-PS C:\app\simple_java_bridge> 
-certutil -hashfile .\target\ROOT.war MD5
-# PowerShell <БОЛЬШИМИ> буквами
-PS C:\app\simple_java_bridge> 
-Get-FileHash .\target\ROOT.war -Algorithm MD5 | Select-Object Hash
-# Linux Ansible
-ansible k8s -m shell \
--a "md5sum /opt/backend/app.war" \
---vault-password-file ~/.ansible_vault_pass
+
 
 
 #### 

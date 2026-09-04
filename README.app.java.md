@@ -445,3 +445,20 @@ curl -k -X POST https://192.168.0.55/api/data \
 # 4. Проверь, что Nginx проксирует правильно:
 # Проверь логи Nginx
 ansible k8s -m shell -a "docker logs nginx --tail 10" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+
+
+### MD5 ####
+md5sum files/ROOT.war
+# PowerShell
+PS C:\app\simple_java_bridge> 
+Get-FileHash -Path .\target\ROOT.war -Algorithm MD5
+# PowerShell маленькими буквами
+PS C:\app\simple_java_bridge> 
+certutil -hashfile .\target\ROOT.war MD5
+# PowerShell <БОЛЬШИМИ> буквами
+PS C:\app\simple_java_bridge> 
+Get-FileHash .\target\ROOT.war -Algorithm MD5 | Select-Object Hash
+# Linux Ansible
+ansible k8s -m shell \
+-a "md5sum /opt/backend/app.war" \
+--vault-password-file ~/.ansible_vault_pass
