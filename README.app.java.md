@@ -52,6 +52,7 @@ simple_java_bridge/
         │                   └── DatabaseService.java
         └── resources/
             └── application.properties
+
 mkdir -p src/{main,java,k8s,api}
 # Узнай, где ты сейчас:
 powershell
@@ -205,6 +206,19 @@ JPA/Hibernate делает всю работу за кулисами:
 # Запуск playbook
 ansible-playbook playbooks/application-deploy.yml \
 --vault-password-file ~/.ansible_vault_pass
+
+==============================================================================
+Spring Boot приложение (порт 8081)
+├── /api/health          ← твой контроллер DataController  
+├── /api/data            ← твой контроллер DataController  
+├── /actuator/health     ← Spring Boot Actuator (автоматически) application.properties
+├── /actuator/metrics    ← Spring Boot Actuator (автоматически) application.properties
+└── /actuator/prometheus ← Spring Boot Actuator (автоматически) application.properties
+# В application.properties включён доступ:
+properties
+management.endpoints.web.exposure.include=health,info,metrics,prometheus
+# Spring Boot автоматически создаёт эндпоинты Actuator, когда ты добавляешь зависимость pom.xml 'spring-boot-starter-actuator'. Ты не пишешь для них контроллер — Spring Boot делает это сам
+curl -s http://192.168.0.55:8081/actuator/prometheus | head -5
 
 ====================== Deploy в контейнер Tomcat =============================
 mkdir files
