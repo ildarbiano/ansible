@@ -1,5 +1,7 @@
 .
 ├── ansible.cfg
+├── files
+│   └── ROOT.war
 ├── group_vars
 │   └── dev
 │       ├── vars.yml
@@ -19,6 +21,7 @@
 │   └── dev
 │       └── hosts.yml
 ├── playbooks
+│   ├── application-deploy.yml
 │   ├── clean-host.yml
 │   ├── docker-setup.yml
 │   ├── grafana-deploy.yml
@@ -41,20 +44,17 @@
 │   │   ├── templates
 │   │   └── vars
 │   ├── grafana
-│   │   ├── defaults
 │   │   ├── files
 │   │   │   └── dashboards
+│   │   │       ├── Application-java.json
 │   │   │       ├── NGINX exporter-1787214556296.json
 │   │   │       ├── Node Exporter Dashboard JMX.json
 │   │   │       ├── Node Exporter Full-1787215102041.json
 │   │   │       └── PostgreSQL Database-1787215166020.json
-│   │   ├── handlers
 │   │   ├── tasks
 │   │   │   └── main.yml
-│   │   ├── templates
-│   │   │   ├── dashboard-provider.yml.j2
-│   │   │   └── datasource.yml.j2
-│   │   └── vars
+│   │   └── templates
+│   │       └── dashboard-provider.yml.j2
 │   ├── jmx_exporter
 │   │   ├── defaults
 │   │   ├── handlers
@@ -138,8 +138,9 @@
 │       ├── tasks
 │       │   └── main.yml
 │       ├── templates
+│       │   └── index.html.j2
 │       └── vars
 ├── site_full_install.yml
 └── site_static_IP.yml
 
-83 directories, 59 files
+81 directories, 62 files
