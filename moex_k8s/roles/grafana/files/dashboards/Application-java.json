@@ -6503,7 +6503,7 @@
       "timezone": "browser",
       "to": "now"
     },
-    "title": "Приложение java Copy (не отслеживаемая)",
+    "title": "Приложение java",
     "variables": [
       {
         "kind": "QueryVariable",
