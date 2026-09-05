@@ -121,3 +121,69 @@ ID дашборда	Что он показывает	Источник данны
 ansible-playbook playbooks/grafana-deploy.yml --vault-password-file ~/.ansible_vault_pass 
 ### проверить, что файлы действительно скопировались на хост
 ansible mngr -m shell -a "ls -la /opt/grafana/dashboards/" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
+
+========== Dashboards ===========================
+# Spring Boot приложение - "JVM Memory"
+Heap память (Использование кучи)	        jvm_memory_used_bytes{area="heap"}	    
+Non-Heap память	(Использование метаспейса)  jvm_memory_used_bytes{area="nonheap"}	
+Heap память (Максимальный размер кучи)      jvm_memory_max_bytes{area="heap"}	 
+# Spring Boot приложение - "Garbage Collection"
+Кол-во GC (Young - Молодое поколение)	    jvm_gc_pause_seconds_count{gc=~".*Young.*"}	
+Кол-во GC (Old - Старое поколение)	        jvm_gc_pause_seconds_count{gc=~".*Old.*"}	
+Длительность GC - Общая длительность 	    jvm_gc_pause_seconds_sum	  
+# Spring Boot приложение - "HTTP и RPS"
+RPS в секунду       rate(http_server_requests_seconds_count[1m])	
+RPS по статусам	    http_server_requests_seconds_count{status=~"2.."}
+RPS по методам	    http_server_requests_seconds_count{method=~"GET"}
+# Spring Boot приложение - "Latency"
+Средняя задержка	        http_server_requests_seconds_sum / http_server_requests_seconds_count	
+P95 - 95-й перцентиль   	histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[1m]))	
+P99	- 99-й перцентиль       histogram_quantile(0.99, rate(http_server_requests_seconds_bucket[1m]))	
+# Spring Boot приложение - "База данных (HikariCP)"
+Активные соединения	            hikaricp_connections_active	
+Свободные соединения	        hikaricp_connections_idle	
+Максимум соединений	            hikaricp_connections_max	
+Количество запросов в БД (сек)	rate(spring_data_repository_invocations_seconds_count[1m])	
+---------------------------------------------------------------------------------------------
+#  Tomcat — "Потоки"
+Текущие потоки - Общее количество потоков   Catalina_Connector_currentThreadCount{port="8080"}	
+Занятые потоки - Занятые потоки             Catalina_Connector_currentThreadsBusy{port="8080"}	
+#  Tomcat — "Соединения и сессии"
+Активные сессии	        Catalina_Session_activeSessions
+Созданные сессии	    Catalina_Session_sessionCounter
+Отклонённые сессии	    Catalina_Session_rejectedSessions
+#  Tomcat — "Обработка запросов"
+Принятые запросы	    Catalina_Connector_acceptCount{port="8080"}
+Таймаут соединения	    Catalina_Connector_connectionTimeout{port="8080"}
+------------------------------------------------------------------------
+# Nginx : "Общие метрики Nginx"
+Текущие активные соединения	                nginx_connections_active	
+Скорость запросов. Запросы в секунду (RPS)	rate(nginx_http_requests_total[1m])	
+Распределение по статусам HTTP статусы	    nginx_http_requests_total{status=~"2.."}	
+# Nginx : "Соединения"
+Активные	            nginx_connections_active
+Ожидающие	            nginx_connections_waiting
+Читающие	            nginx_connections_reading
+Пишущие	                nginx_connections_writing
+# Nginx : "Трафик"
+Входящий трафик (входящий)	    rate(nginx_http_requests_total[1m])
+По методам (GET/POST)	        nginx_http_requests_total{method=~"GET"}
+------------------------------------------------------------------------
+# PostgreSQL — "Соединения"
+Активные соединения	                        pg_stat_database_numbackends
+Максимальное количество соединений	        pg_settings_max_connections	
+Нагрузка на пул - Процент использования	    pg_stat_database_numbackends / pg_settings_max_connections
+# PostgreSQL — "Производительность"
+Запросы (сек). Чтение данных	rate(pg_stat_database_tup_returned[1m])	
+Запись (сек). Вставка записей	rate(pg_stat_database_tup_inserted[1m])	
+Обновление записей          	rate(pg_stat_database_tup_updated[1m])	
+Удаления. Удаление записей  	rate(pg_stat_database_tup_deleted[1m])	
+# PostgreSQL — "Блокировки и кэш"
+Кэш хиты	                pg_stat_database_blks_hit	
+Чтение с диска	            pg_stat_database_blks_read  
+Кэш-хит-рейт. Hit ratio 	pg_stat_database_blks_hit / (pg_stat_database_blks_hit + pg_stat_database_blks_read)	
+# PostgreSQL — "Размер базы"
+Размер БД "dtbase_1"    pg_database_size_bytes{datname="dtbase_1"}	
+Размер таблиц	        pg_table_size_bytes	Размер таблиц
+
+jvm_gc_pause_seconds_sum{application="simple_java_bridge"}
