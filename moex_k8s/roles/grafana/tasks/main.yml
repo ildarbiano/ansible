@@ -48,6 +48,7 @@
     src: dashboards/
     dest: /opt/grafana/dashboards/
     mode: '0644'
+    force: yes
 
 - name: Stop and remove existing grafana container if exists
   shell: |
