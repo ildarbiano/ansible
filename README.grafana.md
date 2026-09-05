@@ -21,13 +21,13 @@ ansible-playbook playbooks/docker-setup.yml \
 # Проверь, что Docker доступен на хосте:
 ansible monigen -m shell -a "docker --version" \
 --vault-password-file ~/.ansible_vault_pass
-# 
+# Запуск
 ansible-playbook playbooks/grafana-deploy.yml \
 --vault-password-file ~/.ansible_vault_pass
-#
+# Запуск
 ansible-playbook playbooks/grafana-deploy.yml \
 --vault-password-file ~/.ansible_vault_pass \
---limit mhgr
+--limit mmgr
 # 1. Создаем шаблон для provisioning datasource, для подключения к Prometheus удалённо:
 cat > roles/grafana/templates/datasource.yml.j2 << 'EOF'
 # 2. Создаем шаблон для provisioning dashboard:
@@ -187,3 +187,13 @@ P99	- 99-й перцентиль       histogram_quantile(0.99, rate(http_server
 Размер таблиц	        pg_table_size_bytes	Размер таблиц
 
 jvm_gc_pause_seconds_sum{application="simple_java_bridge"}
+
+
+### docker stop
+ansible mngr -m \
+shell -a "docker stop grafana && docker rm grafana" \
+--vault-password-file ~/.ansible_vault_pass
+# Удали папку с данными Grafana (чтобы очистить базу)
+ansible mngr -m \
+shell -a "rm -rf /opt/grafana/data/*" \
+--vault-password-file ~/.ansible_vault_pass
