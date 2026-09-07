@@ -135,10 +135,21 @@ mvn clean package
     Направляет его в нужный метод
     Возвращает ответ обратно
 +Controller првращает	JSON → Java (автоматически через Spring)
-Схема потока запроса:
+# Схема потока запроса:
 1. Пользователь отправляет запрос
    POST https://192.168.0.55/api/data
    Body: {"id": 1, "value": "test"}
+   POST /api/data — запись данных в БД
+        Принимает JSON от клиента (например, {"user_id": 1, "value": "test"})
+        Превращает его в JSON-строку через ObjectMapper
+        Сохраняет в таблицу first_pastman_req (через DatabaseService)
+        Измеряет время ответа (responseTimeMs)
+        Возвращает созданную запись с id
+   GET /api/data — получение всех записей
+        Возвращает все записи из таблицы first_pastman_req
+        Без фильтров, без пагинации (для тестов)
+   GET /api/data/count — количество записей
+        Возвращает количество записей в таблице
 
 2. Nginx принимает запрос (порт 443)
    → проксирует на Tomcat (порт 8080)
@@ -147,8 +158,8 @@ mvn clean package
    → передаёт в Spring Boot приложение
 
 4. Spring Boot ищет контроллер
-   → находит DataController с @RequestMapping("/api")
-   → находит метод с @PostMapping("/data")
+   → находит DataController с   @RequestMapping("/api")
+   → находит метод с            @PostMapping("/data")
 
 5. Метод createData() выполняется
    → принимает JSON из тела запроса (@RequestBody)
@@ -211,6 +222,7 @@ ansible-playbook playbooks/application-deploy.yml \
 Spring Boot приложение (порт 8081)
 ├── /api/health          ← твой контроллер DataController  
 ├── /api/data            ← твой контроллер DataController  
+|-- /api/data/count      
 ├── /actuator/health     ← Spring Boot Actuator (автоматически) application.properties
 ├── /actuator/metrics    ← Spring Boot Actuator (автоматически) application.properties
 └── /actuator/prometheus ← Spring Boot Actuator (автоматически) application.properties

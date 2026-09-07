@@ -59,6 +59,9 @@ curl -k https://192.168.0.55/ui/
 # HTTPS на Tomcat API (если есть)
 curl -k https://192.168.0.55/api/
 -----------------------------------
+# Войти внутрь контейнера
+docker exec -it postgres bash
+
 # Проверяем HTTPS:
 # на статику Nginx
 curl -k https://192.168.0.55/

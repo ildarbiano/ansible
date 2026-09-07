@@ -88,7 +88,13 @@ https://192.168.0.55/api/
 curl http://192.168.0.55:8080/
 
 
-# Проверяем, какие приложения развернуты
-ansible k8s -m shell -a "ls -la /opt/tomcat/webapps/"  --vault-password-file ~/.ansible_vault_pass
+##### ==== Docker =====
+sudo docker ps
 # Проверяем логи Tomcat
-ansible k8s -m shell -a "docker logs tomcat --tail 20" --vault-password-file ~/.ansible_vault_pass
+ansible k8s -m \
+shell -a "docker logs tomcat --tail 20" \
+--vault-password-file ~/.ansible_vault_pass
+
+# Войти внутрь контейнера
+sudo docker exec -it tomcat bash
+sudo docker exec -it nginx sh

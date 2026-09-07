@@ -21,7 +21,7 @@ bash
 ansible-playbook playbooks/postgres-deploy.yml \
 --vault-password-file ~/.ansible_vault_pass -v
 
-============== проверка - починка ============
+#### ======== проверка - починка ============
 # На хосте pgs
 ssh ilya@192.168.0.66
 
@@ -40,7 +40,7 @@ ansible-playbook playbooks/postgres-check-connect-throw-k8s.yml \
 --vault-password-file ~/.ansible_vault_pass -v
 
 
-#### =====================
+#### ====== API ==========
 ### через Application POST
 curl -k -X POST https://192.168.0.55/api/data \
   -H "Content-Type: application/json" \
@@ -54,5 +54,51 @@ ansible pgs -m shell \
 --vault-password-file ~/.ansible_vault_pass
 # посчитать количество записей
 curl -k https://192.168.0.55/api/data/count
+# Получи все записи
 curl -k https://192.168.0.55/api/data
+curl -k https://192.168.0.55/api/data | jq .
+  # jq — это JSON-процессор для командной строки. Он позволяет:
+    Красиво форматировать JSON
+    Фильтровать данные
+    Извлекать конкретные поля
+    Строить сложные запросы
+  # | (пайп)	Передаёт вывод curl в jq
+jq .	          Красивое форматирование
+jq '.[]'	      Развернуть массив
+jq '.[].id'	    Выбрать поле id
+jq '.[0].data'  Получить только data из первой записи
+jq '.[-1]'	    Последняя запись
+jq 'length'	    Количество записей
+jq '.[] | select(.id > 5)'	      Фильтр
+jq '.[] | {id, responseTimeMs}'   Получить только id и responseTimeMs
+
+
+## ======= docker ======
+# Войти внутрь контейнера
+docker exec -it postgres bash
+# Посмотреть все запущенные контейнеры на хосте k8s:
+sudo docker ps    
+# Посмотреть логи контейнера
+docker logs postgres --tail 20
+# Вывод всех контейнеров с сетями
+sudo docker ps --format 'table {{.Names}}\t{{.Networks}}'
+# Память внутри контейнера PostgreSQL:
+free -h
+
+# ====== psql =================
+# Запуск psql внутри контейнера:
+psql -U ilya-ansible -d dtbase_1
+# Посмотрим структуру таблицы "first_pastman_req"
+dtbase_1=# \d public.first_pastman_req
+# Размер всей базы dtbase_1:
+dtbase_1=# SELECT pg_database_size('dtbase_1') / 1024 / 1024 AS size_mb;
+# Размер таблицы first_pastman_req:
+dtbase_1=# SELECT pg_total_relation_size('first_pastman_req') / 1024 / 1024 AS table_size_mb;
+# Подробно о размере таблицы (таблица + индексы):
+dtbase_1=# SELECT
+pg_size_pretty(pg_table_size('first_pastman_req')) AS table_size,
+pg_size_pretty(pg_indexes_size('first_pastman_req')) AS index_size,
+pg_size_pretty(pg_total_relation_size('first_pastman_req')) AS total_size;
+# Количество записей в таблице:
+dtbase_1=# SELECT COUNT(*) FROM first_pastman_req;
 

@@ -110,5 +110,23 @@ ansible-vault decrypt group_vars/dev/vault.yml --vault-password-file ~/.ansible_
 # Проверяем содержимое
 cat group_vars/dev/vault.yml
 
-
+##### Docker ###########################
+# Посмотреть логи конкретного контейнера:
+ansible k8s -m \
+shell -a "docker logs tomcat --tail 20" \
+--vault-password-file ~/.ansible_vault_pass
+# Посмотреть все запущенные контейнеры на хосте k8s:
+ansible k8s -m \
+shell -a "docker ps" \
+--vault-password-file ~/.ansible_vault_pass
+# Проверяем, какие приложения развернуты
+ansible k8s -m \
+shell -a "ls -la /opt/tomcat/webapps/" \
+--vault-password-file ~/.ansible_vault_pass
+# Вывод всех контейнеров с сетями
+sudo docker ps --format 'table {{.Names}}\t{{.Networks}}'
+# Вывод всех контейнеров с сетями (экранирование символов)
+ansible k8s -m \
+shell -a "docker ps --format 'table {{ '{{' }}.Names{{ '}}' }}\t{{ '{{' }}.Networks{{ '}}' }}'" \
+--vault-password-file ~/.ansible_vault_pass
 
