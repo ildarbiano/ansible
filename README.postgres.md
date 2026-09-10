@@ -39,6 +39,13 @@ cat > playbooks/postgres-check-connect-throw-k8s.yml << 'EOF'
 ansible-playbook playbooks/postgres-check-connect-throw-k8s.yml \
 --vault-password-file ~/.ansible_vault_pass -v
 
+# Разбор колонок:
+Колонка	          Тип               Откуда берётся	              Может быть пустой?
+id	              bigint (auto)	    Генерируется автоматически	  ❌ Никогда (PRIMARY KEY)
+data	            jsonb	            Из тела POST запроса	        ✅ Да, если ничего не передать. JSONB -хранит произвольную структуру
+method	          varchar(255)	    Из HTTP-метода	              ✅ Да (но у нас всегда "POST")
+request_time      timestamp	        Автоматически (LocalDateTime.now())	✅ Да
+response_time_ms	bigint	          Вычисляется в коде	          ✅ Да
 
 #### ====== API ==========
 ### через Application POST
@@ -89,16 +96,28 @@ free -h
 # Запуск psql внутри контейнера:
 psql -U ilya-ansible -d dtbase_1
 # Посмотрим структуру таблицы "first_pastman_req"
-dtbase_1=# \d public.first_pastman_req
+\d public.first_pastman_req
 # Размер всей базы dtbase_1:
-dtbase_1=# SELECT pg_database_size('dtbase_1') / 1024 / 1024 AS size_mb;
+SELECT pg_database_size('dtbase_1') / 1024 / 1024 AS size_mb;
 # Размер таблицы first_pastman_req:
-dtbase_1=# SELECT pg_total_relation_size('first_pastman_req') / 1024 / 1024 AS table_size_mb;
+SELECT pg_total_relation_size('first_pastman_req') / 1024 / 1024 AS table_size_mb;
 # Подробно о размере таблицы (таблица + индексы):
-dtbase_1=# SELECT
+SELECT
 pg_size_pretty(pg_table_size('first_pastman_req')) AS table_size,
 pg_size_pretty(pg_indexes_size('first_pastman_req')) AS index_size,
 pg_size_pretty(pg_total_relation_size('first_pastman_req')) AS total_size;
 # Количество записей в таблице:
-dtbase_1=# SELECT COUNT(*) FROM first_pastman_req;
+SELECT COUNT(*) FROM first_pastman_req;
+# Посмотреть все записи:
+SELECT * FROM first_pastman_req;
+# Посмотреть данные в читаемом виде:
+SELECT 
+    id,
+    method,
+    request_time,
+    response_time_ms,
+    data::text
+FROM first_pastman_req 
+ORDER BY id DESC 
+LIMIT 10;
 
