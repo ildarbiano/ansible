@@ -92,32 +92,5 @@ sudo docker ps --format 'table {{.Names}}\t{{.Networks}}'
 # Память внутри контейнера PostgreSQL:
 free -h
 
-# ====== psql =================
-# Запуск psql внутри контейнера:
-psql -U ilya-ansible -d dtbase_1
-# Посмотрим структуру таблицы "first_pastman_req"
-\d public.first_pastman_req
-# Размер всей базы dtbase_1:
-SELECT pg_database_size('dtbase_1') / 1024 / 1024 AS size_mb;
-# Размер таблицы first_pastman_req:
-SELECT pg_total_relation_size('first_pastman_req') / 1024 / 1024 AS table_size_mb;
-# Подробно о размере таблицы (таблица + индексы):
-SELECT
-pg_size_pretty(pg_table_size('first_pastman_req')) AS table_size,
-pg_size_pretty(pg_indexes_size('first_pastman_req')) AS index_size,
-pg_size_pretty(pg_total_relation_size('first_pastman_req')) AS total_size;
-# Количество записей в таблице:
-SELECT COUNT(*) FROM first_pastman_req;
-# Посмотреть все записи:
-SELECT * FROM first_pastman_req;
-# Посмотреть данные в читаемом виде:
-SELECT 
-    id,
-    method,
-    request_time,
-    response_time_ms,
-    data::text
-FROM first_pastman_req 
-ORDER BY id DESC 
-LIMIT 10;
+
 

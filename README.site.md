@@ -58,6 +58,8 @@ ansible k8s -m shell \
 -a "docker exec tomcat ping -c 2 postgres" \
 --vault-password-file ~/.ansible_vault_pass
 
+
+#### Docker
 # Показать все контейнеры с сетями
 docker ps --format "table {{.Names}}\t{{.Networks}}"
 # Проверь, что сеть mystand-app-net существует:
@@ -71,9 +73,23 @@ cd ~/ansible/moex_k8s
 grep -r "app-net" --include="*.yml" --include="*.j2" .
 # Проверь, какие контейнеры в сети mystand-app-net:
 docker network inspect mystand-app-net --format='{{range .Containers}}{{.Name}} {{end}}'
+#
+docker ps
+docker stop k6
+docker restart k6
+docker rm k6
+docker rm -f k6
+# Остановить и удалить контейнер
+docker stop k6 2>/dev/null || true
+docker rm k6 2>/dev/null || true
+# Войти внутрь контейнера
+docker exec -it postgres bash   
+# Посмотреть логи контейнера
+docker logs postgres --tail 20
+docker logs k6 --tail 50
+# Вывод всех контейнеров с сетями
+sudo docker ps --format 'table {{.Names}}\t{{.Networks}}'
+# Память внутри контейнера PostgreSQL:
+free -h
 
 
-
-
-
-#### 

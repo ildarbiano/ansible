@@ -12,14 +12,7 @@ ansible pgs -m shell \
 --vault-password-file ~/.ansible_vault_pass
 
 
-======== sql ================
-# УПРАВЛЕНИЕ И НАСТРОЙКА БД:
-sudo cat /opt/postgres/init/init-db.sql
-CREATE USER ilya-ansible WITH PASSWORD '654321';
-CREATE DATABASE dtbase_1 OWNER ilya-ansible;
-GRANT ALL PRIVILEGES ON DATABASE dtbase_1 TO ilya-ansible;
-
-======== psql ======================================================================================
+======== psql через ansible=========================================================================
 # Учитывая, что у тебя хост называется postgres-docker (и ты строишь стенд в виртуалках/контейнерах), 
 # Как быстро проверить, где вообще есть psql
 which psql
@@ -60,3 +53,39 @@ psql -h postgres -p 5434 -U ilya-ansible
 psql -h <IP_контейнера_или_хоста> -p <порт> -U ilya-ansible
 #  посмотри переменные окружения контейнера:
 docker exec postgres env | grep POSTGRES
+
+========= psql c хоста ==========
+# Запуск psql внутри контейнера:
+psql -U ilya-ansible -d dtbase_1
+# Посмотрим структуру таблицы "first_pastman_req"
+\d public.first_pastman_req
+# Размер всей базы dtbase_1:
+SELECT pg_database_size('dtbase_1') / 1024 / 1024 AS size_mb;
+# Размер таблицы first_pastman_req:
+SELECT pg_total_relation_size('first_pastman_req') / 1024 / 1024 AS table_size_mb;
+# Подробно о размере таблицы (таблица + индексы):
+SELECT
+pg_size_pretty(pg_table_size('first_pastman_req')) AS table_size,
+pg_size_pretty(pg_indexes_size('first_pastman_req')) AS index_size,
+pg_size_pretty(pg_total_relation_size('first_pastman_req')) AS total_size;
+
+======== sql ================
+# УПРАВЛЕНИЕ И НАСТРОЙКА БД:
+sudo cat /opt/postgres/init/init-db.sql
+CREATE USER ilya-ansible WITH PASSWORD '654321';
+CREATE DATABASE dtbase_1 OWNER ilya-ansible;
+GRANT ALL PRIVILEGES ON DATABASE dtbase_1 TO ilya-ansible;
+# Количество записей в таблице:
+SELECT COUNT(*) FROM first_pastman_req;
+# Посмотреть все записи:
+SELECT * FROM first_pastman_req;
+# Посмотреть данные в читаемом виде:
+SELECT 
+    id,
+    method,
+    request_time,
+    response_time_ms,
+    data::text
+FROM first_pastman_req 
+ORDER BY id DESC 
+LIMIT 10;
