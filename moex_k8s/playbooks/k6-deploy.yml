@@ -1,0 +1,11 @@
+# playbooks/k6-deploy.yml
+---
+- name: Deploy k6 load testing
+  hosts: gnld
+  become: yes
+  vars_files:
+    - ../group_vars/dev/vault.yml
+
+  roles:
+    - docker_setup
+    - k6

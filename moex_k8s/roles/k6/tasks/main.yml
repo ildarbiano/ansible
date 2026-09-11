@@ -1,0 +1,46 @@
+# roles/k6/tasks/main.yml
+---
+- name: Create k6 directory
+  file:
+    path: /opt/k6
+    state: directory
+    mode: '0755'
+
+- name: Deploy k6 test scripts
+  template:
+    src: "{{ item }}.js.j2"
+    dest: "/opt/k6/{{ item }}.js"
+    mode: '0644'
+  loop:
+    - health-check
+    - load-test
+  notify: restart k6
+
+- name: Stop and remove existing k6 container if exists
+  shell: |
+    docker stop k6 2>/dev/null || true
+    docker rm k6 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run k6 container
+  shell: |
+    docker run -d \
+      --name k6 \
+      --restart unless-stopped \
+      -v /opt/k6:/scripts \
+      grafana/k6:latest \
+      run --insecure-skip-tls-verify /scripts/load-test.js
+  register: docker_run
+  changed_when: docker_run.rc == 0
+
+- name: Display k6 status
+  debug:
+    msg: |
+      ========================================
+      ✅ k6 successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      📁 Scripts: /opt/k6
+      📊 Logs: docker logs k6 -f
+      ========================================

@@ -1,0 +1,5 @@
+# roles/k6/handlers/main.yml
+---
+- name: restart k6
+  shell: docker restart k6
+  listen: "restart k6"
