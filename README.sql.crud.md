@@ -55,6 +55,8 @@ psql -h <IP_контейнера_или_хоста> -p <порт> -U ilya-ansibl
 docker exec postgres env | grep POSTGRES
 
 ========= psql c хоста ==========
+# войти в контейнер
+docker exec -it postgres bash
 # Запуск psql внутри контейнера:
 psql -U ilya-ansible -d dtbase_1
 # Посмотрим структуру таблицы "first_pastman_req"
