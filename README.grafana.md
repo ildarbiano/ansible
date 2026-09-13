@@ -122,7 +122,23 @@ ansible-playbook playbooks/grafana-deploy.yml --vault-password-file ~/.ansible_v
 ### проверить, что файлы действительно скопировались на хост
 ansible mngr -m shell -a "ls -la /opt/grafana/dashboards/" -i inventories/dev/hosts.yml --vault-password-file ~/.ansible_vault_pass
 
-========== Dashboards ===========================
+========== Dashboards ==============
+# Найди все дашборды с "Приложение":
+curl -s -u admin:admin "http://192.168.0.33:3000/api/search" | jq '.[] | select(.title | test("Приложение")) | "\(.title) → \(.uid)"'
+# Действия после создания SAVE AS 
+# Settings → JSON Model → скопируй JSON
+# Открой `roles/grafana/files/dashboards/Application-java.json`
+# Замени ВЕСЬ JSON на новый
+# ВАЖНО: замени `.metadata.name` на UID старого дашборда (adwctzq). # UID=metadata.name =UIDдашборда 
+jq '.metadata.name' roles/grafana/files/dashboards/Application-java.json
+# ВАЖНО: замени `.spec.title` на "Приложение java". # title=spec.title =имя дашборда
+jq '.spec.title' roles/grafana/files/dashboards/Application-java.json
+sudo rm -rf /opt/grafana/data/*
+sudo ls -l /opt/grafana/data/
+# Запуск
+ansible-playbook playbooks/grafana-deploy.yml \
+--vault-password-file ~/.ansible_vault_pass
+
 # Spring Boot приложение - "JVM Memory"
 Heap память (Использование кучи)	        jvm_memory_used_bytes{area="heap"}	    
 Non-Heap память	(Использование метаспейса)  jvm_memory_used_bytes{area="nonheap"}	
