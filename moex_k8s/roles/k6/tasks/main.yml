@@ -23,14 +23,19 @@
   ignore_errors: yes
   changed_when: false
 
-- name: Run k6 container
+- name: Run k6 container with Prometheus remote write
   shell: |
     docker run -d \
       --name k6 \
-      --restart unless-stopped \
+      -e K6_PROMETHEUS_RW_SERVER_URL=http://{{ hostvars['mtrcs']['ansible_host'] }}:9090/api/v1/write \
+      -e K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true \
+      -e K6_PROMETHEUS_RW_PUSH_INTERVAL=5s \
       -v /opt/k6:/scripts \
       grafana/k6:latest \
-      run --insecure-skip-tls-verify /scripts/load-test.js
+      run --insecure-skip-tls-verify \
+      -o experimental-prometheus-rw \
+      --tag testid=load-test-$(date +%Y%m%d-%H%M%S) \
+      /scripts/load-test.js
   register: docker_run
   changed_when: docker_run.rc == 0
 

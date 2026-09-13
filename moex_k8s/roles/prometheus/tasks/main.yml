@@ -28,7 +28,6 @@
   shell: |
     docker run -d \
       --name prometheus \
-      --restart unless-stopped \
       -p 9090:9090 \
       -v /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro \
       -v /opt/prometheus/data:/prometheus \
@@ -36,6 +35,7 @@
       prom/prometheus:latest \
       --config.file=/etc/prometheus/prometheus.yml \
       --storage.tsdb.path=/prometheus \
-      --web.enable-lifecycle
+      --web.enable-lifecycle \
+      --web.enable-remote-write-receiver
   register: docker_run
   changed_when: docker_run.rc == 0
