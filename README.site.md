@@ -75,13 +75,20 @@ grep -r "app-net" --include="*.yml" --include="*.j2" .
 docker network inspect mystand-app-net --format='{{range .Containers}}{{.Name}} {{end}}'
 #
 docker ps
-docker stop k6
 docker restart k6
-docker rm k6
-docker rm -f k6
 # Остановить и удалить контейнер
+docker stop k6
 docker stop k6 2>/dev/null || true
 docker rm k6 2>/dev/null || true
+docker rm k6
+docker rm -f k6
+# даст полную информацию о контейнере, включая сетевые настройки и порты в JSON. Если нужно автоматизировать разбор или получить больше данных — это лучший вариант.
+docker inspect k6
+# покажет сопоставления портов для конкретного контейнера.
+docker port node-exporter
+docker inspect k6 --format='{{json .HostConfig.PortBindings}}'
+docker inspect k6 | grep -A5 '"PortBindings"'
+docker exec k6 ss -tlnp   #--или netstat -tlnp, если есть утилита
 # Войти внутрь контейнера
 docker exec -it postgres bash   
 # Посмотреть логи контейнера

@@ -98,3 +98,9 @@ shell -a "docker logs tomcat --tail 20" \
 # Войти внутрь контейнера
 sudo docker exec -it tomcat bash
 sudo docker exec -it nginx sh
+
+
+##### Настройки Томкат
+# Проверь метрики с thread
+curl -s "http://192.168.0.34:9090/api/v1/label/__name__/values" | tr ',' '\n' | grep -i thread
+curl -s "http://192.168.0.34:9090/api/v1/label/__name__/values" | tr ',' '\n' | grep Catalina_Connector_currentThreadsBusy

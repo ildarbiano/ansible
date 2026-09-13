@@ -82,3 +82,8 @@ ansible k8s -m shell -a "docker ps -a | grep nginx" \
 # Проверь логи Nginx:
 ansible k8s -m shell -a "docker logs nginx --tail 20" \
 --vault-password-file ~/.ansible_vault_pass
+
+
+# Мониторинг
+# проверка, есть ли метрика
+curl -s "http://192.168.0.34:9090/api/v1/label/__name__/values" | tr ',' '\n' | grep http_server_requests
