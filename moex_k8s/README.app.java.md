@@ -488,3 +488,14 @@ Get-FileHash .\target\ROOT.war -Algorithm MD5 | Select-Object Hash
 ansible k8s -m shell \
 -a "md5sum /opt/backend/app.war" \
 --vault-password-file ~/.ansible_vault_pass
+
+
+### Анализ приложения
+curl -k -s -w "Размер ответа: %{size_download} bytes\nВремя: %{time_total} sec\n" \
+-o /dev/null https://192.168.0.55/api/data
+# Пагинация — это стандарт для API. Без неё твой стенд не выдержит нагрузку.
+# Ни одно продакшн-API не возвращает все данные из таблицы. Примеры:
+        API	        Пагинация
+        GitHub	        ?per_page=30&page=1
+        Twitter	        ?count=20&cursor=...
+        Google	        ?maxResults=10&pageToken=...
