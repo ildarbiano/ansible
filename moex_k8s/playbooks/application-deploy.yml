@@ -36,7 +36,7 @@
           -p 8081:8081 \
           --network mystand-app-net \
           -v /opt/backend/app.war:/app.war \
-          -e SPRING_DATASOURCE_URL=jdbc:postgresql://{{ static_ip }}:{{ postgres_port }}/{{ postgres_db }} \
+          -e SPRING_DATASOURCE_URL=jdbc:p6spy:postgresql://{{ static_ip }}:{{ postgres_port }}/{{ postgres_db }} \
           -e SPRING_DATASOURCE_USERNAME={{ postgres_user }} \
           -e SPRING_DATASOURCE_PASSWORD={{ vault_postgres_password }} \
           -e SERVER_PORT=8081 \
