@@ -79,6 +79,7 @@ CREATE DATABASE dtbase_1 OWNER ilya-ansible;
 GRANT ALL PRIVILEGES ON DATABASE dtbase_1 TO ilya-ansible;
 # Количество записей в таблице:
 SELECT COUNT(*) FROM first_pastman_req;
+SELECT COUNT(*) FROM first_pastman_req WHERE method = 'POST';
 # Посмотреть все записи:
 SELECT * FROM first_pastman_req;
 # Посмотреть данные в читаемом виде:
@@ -91,3 +92,8 @@ SELECT
 FROM first_pastman_req 
 ORDER BY id DESC 
 LIMIT 10;
+# Покажет план запроса
+EXPLAIN ANALYZE SELECT * FROM first_pastman_req;
+EXPLAIN ANALYZE SELECT * FROM first_pastman_req LIMIT 100;
+# Размер таблицы:
+SELECT pg_size_pretty(pg_total_relation_size('first_pastman_req'));
