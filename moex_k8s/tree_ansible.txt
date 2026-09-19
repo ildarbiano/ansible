@@ -1,0 +1,342 @@
+.
+├── README.ansible.md
+├── README.app.java.md
+├── README.grafana.md
+├── README.hodejs.md
+├── README.java.hikariCP.md
+├── README.k6.crud.md
+├── README.nginx.md
+├── README.postgres.conf.md
+├── README.postgres.md
+├── README.prometheus.md
+├── README.site.md
+├── README.sql.crud.md
+├── README.tomcat.md
+├── ansible.cfg
+├── files
+│   └── ROOT.war
+├── group_vars
+│   └── dev
+│       ├── vars.yml
+│       └── vault.yml
+├── host_vars
+│   ├── genload
+│   │   └── vars.yml
+│   ├── k8s
+│   │   └── vars.yml
+│   ├── manager
+│   │   └── vars.yml
+│   ├── metrics
+│   │   └── vars.yml
+│   └── pgs
+│       └── vars.yml
+├── inventories
+│   └── dev
+│       └── hosts.yml
+├── playbooks
+│   ├── application-deploy.yml
+│   ├── clean-host.yml
+│   ├── docker-setup.yml
+│   ├── grafana-deploy.yml
+│   ├── k6-deploy.yml
+│   ├── nginx-check.yml
+│   ├── nginx-deploy.yml
+│   ├── nodejs-deploy.yml
+│   ├── postgres-check-connect-throw-k8s.yml
+│   ├── postgres-delete-dbs.yml
+│   ├── postgres-deploy.yml
+│   ├── postgres-inspect.yml
+│   ├── postgres-manage-dbs.yml
+│   ├── prometheus-deploy.yml
+│   └── tomcat-deploy.yml
+├── roles
+│   ├── docker_setup
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── grafana
+│   │   ├── files
+│   │   │   └── dashboards
+│   │   │       ├── Application-java.json
+│   │   │       ├── NGINX exporter-1787214556296.json
+│   │   │       ├── Node Exporter Dashboard JMX.json
+│   │   │       ├── Node Exporter Full-1787215102041.json
+│   │   │       ├── PostgreSQL Database-1787215166020.json
+│   │   │       └── k6 Prometheus.json
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   └── templates
+│   │       └── dashboard-provider.yml.j2
+│   ├── jmx_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── k6
+│   │   ├── files
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   └── templates
+│   │       ├── health-check.js.j2
+│   │       └── load-test.js.j2
+│   ├── nginx
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   ├── index.html.j2
+│   │   │   └── nginx.conf.j2
+│   │   └── vars
+│   ├── nginx_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── node_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── nodejs
+│   │   ├── defaults
+│   │   ├── files
+│   │   │   └── public
+│   │   │       └── images
+│   │   │           ├── Simple Net Components.png
+│   │   │           └── Simple_Net_Components.png
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   ├── index.html.j2
+│   │   │   ├── package.json.j2
+│   │   │   ├── server.js.j2
+│   │   │   └── tabs
+│   │   │       ├── ais.html
+│   │   │       ├── rais.html
+│   │   │       └── tis.html
+│   │   └── vars
+│   │       └── main.yml
+│   ├── postgres
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   └── init-db.sql.j2
+│   │   └── vars
+│   ├── postgres_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── prometheus
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   └── prometheus.yml.j2
+│   │   └── vars
+│   ├── static_ip
+│   │   └── templates
+│   │       └── 00-installer-config.yaml.j2
+│   └── tomcat
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       ├── templates
+│       │   └── index.html.j2
+│       └── vars
+├── site_full_install.yml
+├── site_static_IP.yml
+└── tree_ansible.txt
+
+86 directories, 82 files
+.
+├── README.ansible.md
+├── README.app.java.md
+├── README.grafana.md
+├── README.hodejs.md
+├── README.java.hikariCP.md
+├── README.k6.crud.md
+├── README.nginx.md
+├── README.postgres.conf.md
+├── README.postgres.md
+├── README.prometheus.md
+├── README.site.md
+├── README.sql.crud.md
+├── README.tomcat.md
+├── ansible.cfg
+├── files
+│   └── ROOT.war
+├── group_vars
+│   └── dev
+│       ├── vars.yml
+│       └── vault.yml
+├── host_vars
+│   ├── genload
+│   │   └── vars.yml
+│   ├── k8s
+│   │   └── vars.yml
+│   ├── manager
+│   │   └── vars.yml
+│   ├── metrics
+│   │   └── vars.yml
+│   └── pgs
+│       └── vars.yml
+├── inventories
+│   └── dev
+│       └── hosts.yml
+├── playbooks
+│   ├── application-deploy.yml
+│   ├── clean-host.yml
+│   ├── docker-setup.yml
+│   ├── grafana-deploy.yml
+│   ├── k6-deploy.yml
+│   ├── nginx-check.yml
+│   ├── nginx-deploy.yml
+│   ├── nodejs-deploy.yml
+│   ├── postgres-check-connect-throw-k8s.yml
+│   ├── postgres-delete-dbs.yml
+│   ├── postgres-deploy.yml
+│   ├── postgres-inspect.yml
+│   ├── postgres-manage-dbs.yml
+│   ├── prometheus-deploy.yml
+│   └── tomcat-deploy.yml
+├── roles
+│   ├── docker_setup
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── grafana
+│   │   ├── files
+│   │   │   └── dashboards
+│   │   │       ├── Application-java.json
+│   │   │       ├── NGINX exporter-1787214556296.json
+│   │   │       ├── Node Exporter Dashboard JMX.json
+│   │   │       ├── Node Exporter Full-1787215102041.json
+│   │   │       ├── PostgreSQL Database-1787215166020.json
+│   │   │       └── k6 Prometheus.json
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   └── templates
+│   │       └── dashboard-provider.yml.j2
+│   ├── jmx_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── k6
+│   │   ├── files
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   └── templates
+│   │       ├── health-check.js.j2
+│   │       └── load-test.js.j2
+│   ├── nginx
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   ├── index.html.j2
+│   │   │   └── nginx.conf.j2
+│   │   └── vars
+│   ├── nginx_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── node_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── nodejs
+│   │   ├── defaults
+│   │   ├── files
+│   │   │   └── public
+│   │   │       └── images
+│   │   │           ├── Simple Net Components.png
+│   │   │           └── Simple_Net_Components.png
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   ├── index.html.j2
+│   │   │   ├── package.json.j2
+│   │   │   ├── server.js.j2
+│   │   │   └── tabs
+│   │   │       ├── ais.html
+│   │   │       ├── rais.html
+│   │   │       └── tis.html
+│   │   └── vars
+│   │       └── main.yml
+│   ├── postgres
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   └── init-db.sql.j2
+│   │   └── vars
+│   ├── postgres_exporter
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   └── vars
+│   ├── prometheus
+│   │   ├── defaults
+│   │   ├── handlers
+│   │   │   └── main.yml
+│   │   ├── tasks
+│   │   │   └── main.yml
+│   │   ├── templates
+│   │   │   └── prometheus.yml.j2
+│   │   └── vars
+│   ├── static_ip
+│   │   └── templates
+│   │       └── 00-installer-config.yaml.j2
+│   └── tomcat
+│       ├── handlers
+│       │   └── main.yml
+│       ├── tasks
+│       │   └── main.yml
+│       ├── templates
+│       │   └── index.html.j2
+│       └── vars
+├── site_full_install.yml
+├── site_static_IP.yml
+└── tree_ansible.txt
+
+86 directories, 82 files
