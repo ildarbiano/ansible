@@ -85,12 +85,26 @@ jq '.[] | {id, responseTimeMs}'   Получить только id и responseTi
 docker exec -it postgres bash
 # Посмотреть все запущенные контейнеры на хосте k8s:
 sudo docker ps    
-# Посмотреть логи контейнера
-docker logs postgres --tail 20
 # Вывод всех контейнеров с сетями
 sudo docker ps --format 'table {{.Names}}\t{{.Networks}}'
 # Память внутри контейнера PostgreSQL:
 free -h
+#### ======= Логирование 
+# логи, по умолчанию, PostgreSQL пишет в stderr, а Docker перенаправляет это в docker logs
+# stderr — логи в docker logs
+# Посмотреть логи контейнера
+docker logs postgres --tail 20
+docker logs postgres --tail 50
+# Лог в реальном времени
+docker logs -f postgres   
 
 
-
+#### НАСТРОЙКА Postgres
+# ALTER SYSTEM настройка параметра (первоначально)
+ALTER SYSTEM SET log_min_duration_statement = 3000; SELECT pg_reload_conf();
+# При изменени custom параметра, нужно перегрузить:
+SELECT pg_reload_conf();
+# Проверь, что настройка применилась:
+SHOW log_min_duration_statement;
+# Проверь, 
+SHOW log_destination; # stderr — логи в docker logs

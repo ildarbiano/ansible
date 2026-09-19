@@ -155,3 +155,9 @@ deploy:
 Это гарантирует, что даже при пиковой нагрузке k6 не «положит» Prometheus и Grafana, и ты сможешь увидеть метрики самого сбоя.
 Итог: Размещение k6, Prometheus и Grafana на одном хосте monigen — это стандартный и рабочий подход для тестовых стендов. Главное — не забывать про лимиты ресурсов для k6 и правильно настроить экспорт его собственных метрик в Prometheus, чтобы видеть полную картину, а не только загрузку железа.
 
+#### Проверка метрик.
+# Еесть ли уже метрика pg_stat_user_tables_size_bytes ?
+curl -s "http://192.168.0.34:9090/api/v1/label/__name__/values" | tr ',' '\n' | grep "pg_stat_user_tables"
+curl -s http://192.168.0.66:9187/metrics | grep pg_stat_user_tables_table_size_bytes | head -5
+# Проверь метки node_filesystem_avail_bytes:
+curl -s "http://192.168.0.34:9090/api/v1/query?query=node_filesystem_avail_bytes" | jq '.data.result[] | {instance: .metric.instance, mountpoint: .metric.mountpoint, device: .metric.device}'
