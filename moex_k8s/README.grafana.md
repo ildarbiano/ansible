@@ -131,7 +131,7 @@ curl -s -u admin:admin "http://192.168.0.33:3000/api/search" | jq '.[] | select(
 # Замени ВЕСЬ JSON на новый
 # ВАЖНО: замени `.metadata.name` на UID старого дашборда (adwctzq). # UID=metadata.name =UIDдашборда 
 jq '.metadata.name' roles/grafana/files/dashboards/Application-java.json
-# ВАЖНО: замени `.spec.title` на "Приложение java". # title=spec.title =имя дашборда
+# ВАЖНО: замени `.spec.title` на "Приложение java". # title=spec.title =имя дашборда ("title": "Приложение java Copy",)
 jq '.spec.title' roles/grafana/files/dashboards/Application-java.json
 sudo rm -rf /opt/grafana/data/*
 sudo ls -l /opt/grafana/data/

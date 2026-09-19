@@ -4,18 +4,18 @@
   "metadata": {
     "name": "adwctzq",
     "namespace": "default",
-    "uid": "2b4c1c68-7ed4-496b-93e8-7a66bc56de03",
-    "resourceVersion": "1789297271834989",
-    "generation": 66,
-    "creationTimestamp": "2026-09-13T06:37:06Z",
+    "uid": "7f26c273-5fa3-4a42-b23b-28ba77ff5691",
+    "resourceVersion": "1789820116490019",
+    "generation": 50,
+    "creationTimestamp": "2026-09-19T06:19:47Z",
     "labels": {
-      "grafana.app/deprecatedInternalID": "347129638092800"
+      "grafana.app/deprecatedInternalID": "2517095846989824"
     },
     "annotations": {
-      "grafana.app/createdBy": "user:dfxck5e8j4glcc",
+      "grafana.app/createdBy": "user:bfy4o9pyx42rke",
       "grafana.app/saved-from-ui": "Grafana v13.2.0 (f681b1359f)",
-      "grafana.app/updatedBy": "user:dfxck5e8j4glcc",
-      "grafana.app/updatedTimestamp": "2026-09-13T11:01:11Z"
+      "grafana.app/updatedBy": "user:bfy4o9pyx42rke",
+      "grafana.app/updatedTimestamp": "2026-09-19T12:15:16Z"
     }
   },
   "spec": {
@@ -3607,7 +3607,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "pg_stat_database_numbackends",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -3806,7 +3806,32 @@
                     }
                   }
                 },
-                "overrides": []
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "GET - /api/data"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
               }
             }
           }
@@ -3836,7 +3861,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "pg_settings_max_connections\t",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
@@ -4063,8 +4088,8 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "rate(pg_stat_database_tup_returned[1m])",
-                        "legendFormat": "__auto",
+                        "expr": "rate(pg_stat_database_tup_returned[1m]) / 1000",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -4097,7 +4122,7 @@
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "rows per second",
+                  "unit": "rowsps",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -4179,7 +4204,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(pg_stat_database_tup_inserted[1m])",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -4408,7 +4433,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(pg_stat_database_tup_deleted[1m])\t",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -4522,7 +4547,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "pg_stat_database_blks_hit",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -4636,7 +4661,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "pg_stat_database_blks_read",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -4750,7 +4775,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "pg_stat_database_blks_hit / (pg_stat_database_blks_hit + pg_stat_database_blks_read)\t",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{datid}} = {{datname}}",
                         "range": true
                       }
                     },
@@ -4844,7 +4869,7 @@
         "kind": "Panel",
         "spec": {
           "id": 49,
-          "title": "Размер БД \"dtbase_1\"",
+          "title": "Размер всех БД и таблиц в \"dtbase_1\"",
           "description": "",
           "links": [],
           "data": {
@@ -4863,12 +4888,34 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "pg_database_size_bytes{datname=\"dtbase_1\"} / 1048576",
-                        "legendFormat": "__auto",
+                        "expr": "pg_database_size_bytes  / 1024^3",
+                        "legendFormat": "{{datname}}",
                         "range": true
                       }
                     },
                     "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "pg_stat_user_tables_table_size_bytes{datname=~\"$datname\", relname=~\"$relname\", relname!=\"\"} / 1024^3",
+                        "instant": false,
+                        "legendFormat": "{{datname}}-|-{{relname}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "B",
                     "hidden": false
                   }
                 }
@@ -4980,120 +5027,6 @@
                         "editorMode": "code",
                         "expr": "spring_data_repository_invocations_seconds_count{application=\"simple_java_bridge\"}",
                         "legendFormat": "{{method}}",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.2.0",
-            "spec": {
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-50": {
-        "kind": "Panel",
-        "spec": {
-          "id": 50,
-          "title": "Размер таблиц",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "PBFA97CFB590B2093"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "pg_table_size_bytes\tРазмер таблиц",
-                        "legendFormat": "__auto",
                         "range": true
                       }
                     },
@@ -5893,6 +5826,121 @@
           }
         }
       },
+      "panel-57": {
+        "kind": "Panel",
+        "spec": {
+          "id": 57,
+          "title": "Доступное место instance=Postgres (Node_Exporter)",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "node_filesystem_avail_bytes{instance=\"192.168.0.66:9100\", mountpoint=\"/\"} / 1024 / 1024 / 1024",
+                        "legendFormat": "{{instance}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decgbytes",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
       "panel-6": {
         "kind": "Panel",
         "spec": {
@@ -6244,7 +6292,7 @@
             "kind": "RowsLayoutRow",
             "spec": {
               "title": "k6 - genload -  \"Общая нагрузка\" \"Сколько мы подаём?\" Понять, какая нагрузка идёт на стенд",
-              "collapse": true,
+              "collapse": false,
               "layout": {
                 "kind": "GridLayout",
                 "spec": {
@@ -6283,7 +6331,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "k6 - genload -  \"Производительность\" \"Как стенд справляется?\" Понять, где узкие места",
+              "title": "k6 - genload -  \"Производительность\" \"Latency\" \"Как стенд справляется?\" Понять, где узкие места",
               "collapse": true,
               "layout": {
                 "kind": "GridLayout",
@@ -7010,7 +7058,7 @@
                         "x": 0,
                         "y": 0,
                         "width": 8,
-                        "height": 9,
+                        "height": 11,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-39"
@@ -7168,24 +7216,24 @@
                       "spec": {
                         "x": 0,
                         "y": 0,
-                        "width": 11,
-                        "height": 13,
+                        "width": 23,
+                        "height": 8,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-49"
+                          "name": "panel-57"
                         }
                       }
                     },
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 11,
-                        "y": 0,
-                        "width": 11,
-                        "height": 13,
+                        "x": 0,
+                        "y": 8,
+                        "width": 23,
+                        "height": 8,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-50"
+                          "name": "panel-49"
                         }
                       }
                     }
@@ -7226,11 +7274,12 @@
       {
         "kind": "QueryVariable",
         "spec": {
-          "name": "query0",
+          "name": "metris",
           "current": {
             "text": "simple_java_bridge",
             "value": "simple_java_bridge"
           },
+          "label": "Источник метрик",
           "hide": "dontHide",
           "refresh": "onDashboardLoad",
           "skipUrlSync": false,
@@ -7255,6 +7304,86 @@
           "multi": false,
           "includeAll": false,
           "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "datname",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Базы данных",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "PBFA97CFB590B2093"
+            },
+            "spec": {
+              "qryType": 5,
+              "query": "label_values(pg_database_size_bytes, datname)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "label_values(pg_database_size_bytes, datname)",
+          "options": [],
+          "multi": true,
+          "includeAll": true,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "relname",
+          "current": {
+            "text": [
+              "pg_stat_user_tables_table_size_bytes{datname=\"dtbase_1\",instance=\"192.168.0.66:9187\",job=\"postgres_exporter\",relname=\"first_pastman_req\",schemaname=\"public\"}"
+            ],
+            "value": [
+              "pg_stat_user_tables_table_size_bytes{datname=\"dtbase_1\",instance=\"192.168.0.66:9187\",job=\"postgres_exporter\",relname=\"first_pastman_req\",schemaname=\"public\"}"
+            ]
+          },
+          "label": "Таблицы",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "PBFA97CFB590B2093"
+            },
+            "spec": {
+              "qryType": 5,
+              "query": "label_values(pg_stat_user_tables_table_size_bytes{relname=~\".+\"}, relname)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "label_values(pg_stat_user_tables_table_size_bytes{relname=~\".+\"}, relname)",
+          "options": [],
+          "multi": true,
+          "includeAll": true,
+          "allowCustomValue": true,
+          "staticOptions": [
+            {
+              "text": "",
+              "value": ""
+            }
+          ]
         }
       }
     ],

@@ -493,6 +493,16 @@ ansible k8s -m shell \
 ### Анализ приложения
 curl -k -s -w "Размер ответа: %{size_download} bytes\nВремя: %{time_total} sec\n" \
 -o /dev/null https://192.168.0.55/api/data
+# Первые 100 записей
+curl -k -s -w "Размер ответа: %{size_download} bytes\nВремя: %{time_total}s\n" \
+-o /dev/null "https://192.168.0.55/api/data?page=0&size=100"
+
+# Следующие 100 записей
+curl -k -s -w "Размер ответа: %{size_download} bytes\nВремя: %{time_total} sec\n" \
+-o /dev/null "https://192.168.0.55/api/data?page=1&size=100"
+
+# Количество записей
+curl -k "https://192.168.0.55/api/data/count"
 # Пагинация — это стандарт для API. Без неё твой стенд не выдержит нагрузку.
 # Ни одно продакшн-API не возвращает все данные из таблицы. Примеры:
         API	        Пагинация
