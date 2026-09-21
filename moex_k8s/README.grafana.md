@@ -135,6 +135,16 @@ jq '.metadata.name' roles/grafana/files/dashboards/Application-java.json
 jq '.spec.title' roles/grafana/files/dashboards/Application-java.json
 sudo rm -rf /opt/grafana/data/*
 sudo ls -l /opt/grafana/data/
+========== Настройка Dashboards =================
+# чтобы искать нужный 
+icurl -s "http://192.168.0.34:9090/api/v1/query?query=node_uname_info" | jq '.data.result[] | "\(.metric.nodename) → \(.metric.instance)"'
+"973602a97905 → 192.168.0.55:9100"
+"86f843eb5c59 → 192.168.0.44:9100"
+"037628b8c253 → 192.168.0.34:9100"
+"0f0ecb1e2231 → 192.168.0.66:9100"
+"d91d40d68164 → 192.168.0.33:9100"
+
+
 # Запуск
 ansible-playbook playbooks/grafana-deploy.yml \
 --vault-password-file ~/.ansible_vault_pass
