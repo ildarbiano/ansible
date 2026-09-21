@@ -24,10 +24,12 @@ scrape_configs:
       - targets:
         - {{ hostvars['k8s']['ansible_host'] }}:9113
 
+{% if false %}
   - job_name: 'jmx_exporter'
     static_configs:
       - targets:
         - {{ hostvars['k8s']['ansible_host'] }}:9010
+{% endif %}
 
   - job_name: 'backend-java-application'
     static_configs:

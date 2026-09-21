@@ -1,11 +1,13 @@
+# playbooks/tomcat-deploy.yml
+# Временно отключено — используется встроенный Tomcat в Spring Boot
 ---
-- name: Deploy Tomcat on k8s host
-  hosts: k8s
-  become: yes
-  gather_facts: yes
-  vars_files:
-    - ../group_vars/dev/vault.yml
+#- name: Deploy Tomcat on k8s host
+#  hosts: k8s
+#  become: yes
+#  gather_facts: yes
+#  vars_files:
+#    - ../group_vars/dev/vault.yml
 
-  roles:
-    - jmx_exporter
-    - tomcat
+#  roles:
+#    - jmx_exporter
+#    - tomcat

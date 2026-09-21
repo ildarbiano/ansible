@@ -6,8 +6,7 @@
   gather_facts: yes
   vars_files:
     - ../group_vars/dev/vault.yml
-# playbooks/prometheus-deploy.yml
-  
+
   roles:
     - docker_setup
     - node_exporter
@@ -20,7 +19,7 @@
     - ../group_vars/dev/vault.yml
     - ../group_vars/dev/vars.yml
     - ../host_vars/pgs/vars.yml
-  
+
   roles:
     - postgres_exporter
 
@@ -34,16 +33,16 @@
   roles:
     - nginx_exporter
 
-- name: Deploy JMX Exporter on k8s (Tomcat)
-  hosts: k8s
-  become: yes
-  gather_facts: yes
-  vars_files:
-    - ../group_vars/dev/vault.yml
-    - ../host_vars/k8s/vars.yml
-
-  roles:
-    - jmx_exporter
+# - name: Deploy JMX Exporter on k8s (Tomcat)
+#   hosts: k8s
+#   become: yes
+#   gather_facts: yes
+#   vars_files:
+#     - ../group_vars/dev/vault.yml
+#     - ../host_vars/k8s/vars.yml
+#
+#   roles:
+#     - jmx_exporter
 
 - name: Deploy Prometheus on metrics
   hosts: mtrcs
