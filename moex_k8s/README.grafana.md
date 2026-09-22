@@ -133,6 +133,8 @@ curl -s -u admin:admin "http://192.168.0.33:3000/api/search" | jq '.[] | select(
 jq '.metadata.name' roles/grafana/files/dashboards/Application-java.json
 # ВАЖНО: замени `.spec.title` на "Приложение java". # title=spec.title =имя дашборда ("title": "Приложение java Copy",)
 jq '.spec.title' roles/grafana/files/dashboards/Application-java.json
+docker stop grafana
+docker rm  grafana
 sudo rm -rf /opt/grafana/data/*
 sudo ls -l /opt/grafana/data/
 ========== Настройка Dashboards =================
