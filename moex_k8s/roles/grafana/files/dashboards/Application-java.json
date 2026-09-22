@@ -2,20 +2,20 @@
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
   "metadata": {
-    "name": "adwctzq",
+    "name": "adhstxk",
     "namespace": "default",
-    "uid": "7f26c273-5fa3-4a42-b23b-28ba77ff5691",
-    "resourceVersion": "1789820116490019",
-    "generation": 50,
-    "creationTimestamp": "2026-09-19T06:19:47Z",
+    "uid": "5c21c7bf-f139-4e4e-a7cb-7121b308c08c",
+    "resourceVersion": "1790088625677989",
+    "generation": 62,
+    "creationTimestamp": "2026-09-22T09:25:20Z",
     "labels": {
-      "grafana.app/deprecatedInternalID": "2517095846989824"
+      "grafana.app/deprecatedInternalID": "3650955428429824"
     },
     "annotations": {
-      "grafana.app/createdBy": "user:bfy4o9pyx42rke",
+      "grafana.app/createdBy": "user:afyxjnmqlnda8d",
       "grafana.app/saved-from-ui": "Grafana v13.2.0 (f681b1359f)",
-      "grafana.app/updatedBy": "user:bfy4o9pyx42rke",
-      "grafana.app/updatedTimestamp": "2026-09-19T12:15:16Z"
+      "grafana.app/updatedBy": "user:afyxjnmqlnda8d",
+      "grafana.app/updatedTimestamp": "2026-09-22T14:50:25Z"
     }
   },
   "spec": {
@@ -1877,7 +1877,7 @@
         "kind": "Panel",
         "spec": {
           "id": 25,
-          "title": "Занятые потоки - Занятые потоки на порт 8080",
+          "title": "Threads: Занятые потоки Busy и Максимально настроенные",
           "description": "",
           "links": [],
           "data": {
@@ -1896,12 +1896,34 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "Catalina_Connector_currentThreadsBusy{port=\"8080\"}",
-                        "legendFormat": "__auto",
+                        "expr": "tomcat_threads_busy_threads{application=\"simple_java_bridge\"}",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
                     "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "tomcat_threads_config_max_threads{application=\"simple_java_bridge\"}",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "B",
                     "hidden": false
                   }
                 }
@@ -2010,8 +2032,8 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "Catalina_Session_activeSessions",
-                        "legendFormat": "__auto",
+                        "expr": "tomcat_sessions_active_current_sessions{application=\"simple_java_bridge\"}",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
@@ -2124,8 +2146,8 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "Catalina_Session_sessionCounter",
-                        "legendFormat": "__auto",
+                        "expr": "tomcat_sessions_created_sessions_total{application=\"simple_java_bridge\"}",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
@@ -2238,8 +2260,8 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "Catalina_Session_rejectedSession",
-                        "legendFormat": "__auto",
+                        "expr": "tomcat_sessions_rejected_sessions_total{application=\"simple_java_bridge\"}",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
@@ -2675,7 +2697,7 @@
         "kind": "Panel",
         "spec": {
           "id": 31,
-          "title": "Скорость запросов. Запросы в секунду (RPS",
+          "title": "Скорость запросов - nginx_http_requests_total. Запросы в секунду (RPS",
           "description": "",
           "links": [],
           "data": {
@@ -2785,126 +2807,12 @@
           }
         }
       },
-      "panel-32": {
-        "kind": "Panel",
-        "spec": {
-          "id": 32,
-          "title": "Распределение по статусам HTTP статусы 2**",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "PBFA97CFB590B2093"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "nginx_http_requests_total{status=~\"2..\"}\t",
-                        "legendFormat": "__auto",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.2.0",
-            "spec": {
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
       "panel-33": {
         "kind": "Panel",
         "spec": {
           "id": 33,
           "title": "Активные соединения",
-          "description": "",
+          "description": "Nginx держит соединения, если nginx_connections_active > tomcat_threads_busy",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -2923,107 +2831,14 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "nginx_connections_active",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
                     "refId": "A",
                     "hidden": false
                   }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.2.0",
-            "spec": {
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
                 },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-34": {
-        "kind": "Panel",
-        "spec": {
-          "id": 34,
-          "title": "Ожидающие соединения",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
                 {
                   "kind": "PanelQuery",
                   "spec": {
@@ -3036,126 +2851,13 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "nginx_connections_waiting",
-                        "legendFormat": "__auto",
+                        "expr": "tomcat_threads_busy_threads{application=\"simple_java_bridge\"}",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.2.0",
-            "spec": {
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-35": {
-        "kind": "Panel",
-        "spec": {
-          "id": 35,
-          "title": "Читающие соединения",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "PBFA97CFB590B2093"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "nginx_connections_reading",
-                        "legendFormat": "__auto",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
+                    "refId": "B",
                     "hidden": false
                   }
                 }
@@ -3265,107 +2967,14 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "nginx_connections_writing",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
                     "refId": "A",
                     "hidden": false
                   }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.2.0",
-            "spec": {
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
                 },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-37": {
-        "kind": "Panel",
-        "spec": {
-          "id": 37,
-          "title": "Входящий трафик (входящий)",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
                 {
                   "kind": "PanelQuery",
                   "spec": {
@@ -3378,12 +2987,35 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "rate(nginx_http_requests_total[1m])",
-                        "legendFormat": "__auto",
+                        "expr": "nginx_connections_waiting",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
-                    "refId": "A",
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "nginx_connections_reading",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "C",
                     "hidden": false
                   }
                 }
@@ -3473,8 +3105,8 @@
         "kind": "Panel",
         "spec": {
           "id": 38,
-          "title": "По методам (GET/POST)",
-          "description": "",
+          "title": "процент использования лимита worker_connections или worker_processes",
+          "description": "512 = значение worker_connections или worker_processes.\nПо умолчанию worker_connections = 512",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -3492,7 +3124,7 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "nginx_http_requests_total{method=~\"GET\"}",
+                        "expr": "100 * nginx_connections_active / 512",
                         "legendFormat": "__auto",
                         "range": true
                       }
@@ -3526,6 +3158,7 @@
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "percent",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -5485,7 +5118,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "rate(k6_http_req_failed_rate[1m])",
-                        "legendFormat": "__auto",
+                        "legendFormat": "{{method}} = {{status}}",
                         "range": true
                       }
                     },
@@ -5941,11 +5574,11 @@
           }
         }
       },
-      "panel-6": {
+      "panel-58": {
         "kind": "Panel",
         "spec": {
-          "id": 6,
-          "title": "Текущие активные соединения",
+          "id": 58,
+          "title": "% занятых потокав threads, от мкасимально заданных",
           "description": "",
           "links": [],
           "data": {
@@ -5964,8 +5597,8 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "nginx_connections_active",
-                        "legendFormat": "__auto",
+                        "expr": "100 * tomcat_threads_busy_threads / tomcat_threads_config_max_threads {application=\"simple_java_bridge\"}",
+                        "legendFormat": "{{application}}",
                         "range": true
                       }
                     },
@@ -6055,11 +5688,11 @@
           }
         }
       },
-      "panel-8": {
+      "panel-59": {
         "kind": "Panel",
         "spec": {
-          "id": 8,
-          "title": "Текущие потоки - Общее количество потоков на порт 8080",
+          "id": 59,
+          "title": "Request Time при RPS",
           "description": "",
           "links": [],
           "data": {
@@ -6078,12 +5711,465 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "Catalina_Connector_currentThreadCount{port=\"8080\"}",
-                        "legendFormat": "__auto",
+                        "expr": "nginx_request_time_seconds ",
+                        "legendFormat": "{{__name__}}",
                         "range": true
                       }
                     },
                     "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(nginx_http_requests_total[1m])",
+                        "instant": false,
+                        "legendFormat": "__auto",
+                        "range": true
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-60": {
+        "kind": "Panel",
+        "spec": {
+          "id": 60,
+          "title": "Upstream",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "nginx_upstream_connect_time_seconds",
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "nginx_upstream_response_time_seconds",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "nginx_upstream_header_time_seconds",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "s",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-61": {
+        "kind": "Panel",
+        "spec": {
+          "id": 61,
+          "title": "среднее время backend через Nginx и Напрямую",
+          "description": "nginx_upstream_response_time_seconds — среднее время backend \nчерез Nginx\n\nhttp_server_requests_seconds — среднее время backend напрямую\n\nGET - /actuator/prometheus, GET - /api/data, POST - /api/data — Жёлтая/синяя/оранжевая — http_server_requests_seconds - это метрики (Actuator)\n\nЗелёная — nginx_upstream_response_time_seconds (mtail)\n\nКАК ИНТЕРПРЕТИРОВАТЬ:\n\nЕсли Линии совпадают, -значит Nginx не добавляет задержки;\n\nЕсли Nginx выше на 1-5 ms, -значит нормально (сеть, keep-alive);\n\nЕсли Nginx выше на 10+ ms, -значит Nginx тормозит;\n\nЕсли Nginx ниже, -значит странно — возможно, разные endpoints.",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "avg(nginx_upstream_response_time_seconds)",
+                        "legendFormat": "{{auto}} ",
+                        "range": true
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(http_server_requests_seconds_sum{application=\"simple_java_bridge\"}[1m]) \r\n/ \r\nrate(http_server_requests_seconds_count{application=\"simple_java_bridge\"}[1m])",
+                        "instant": false,
+                        "legendFormat": "{{method}} - {{uri}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "id": 8,
+          "title": "Соединения: Текущие и мксимально настроенные",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "tomcat_connections_current_connections{application=\"simple_java_bridge\"}",
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PBFA97CFB590B2093"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "tomcat_connections_config_max_connections{application=\"simple_java_bridge\"}",
+                        "instant": false,
+                        "legendFormat": "{{__name__}}",
+                        "range": true
+                      }
+                    },
+                    "refId": "B",
                     "hidden": false
                   }
                 }
@@ -6292,7 +6378,7 @@
             "kind": "RowsLayoutRow",
             "spec": {
               "title": "k6 - genload -  \"Общая нагрузка\" \"Сколько мы подаём?\" Понять, какая нагрузка идёт на стенд",
-              "collapse": false,
+              "collapse": true,
               "layout": {
                 "kind": "GridLayout",
                 "spec": {
@@ -6411,7 +6497,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "Nginx : \"Общие метрики Nginx\"",
+              "title": "Nginx : \"Общие метрики Nginx\" - Трафик",
               "collapse": true,
               "layout": {
                 "kind": "GridLayout",
@@ -6422,37 +6508,24 @@
                       "spec": {
                         "x": 0,
                         "y": 0,
-                        "width": 7,
-                        "height": 11,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-6"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 7,
-                        "y": 0,
-                        "width": 7,
-                        "height": 11,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-32"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 14,
-                        "y": 0,
                         "width": 10,
                         "height": 11,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-31"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 10,
+                        "y": 0,
+                        "width": 12,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-38"
                         }
                       }
                     }
@@ -6475,7 +6548,7 @@
                       "spec": {
                         "x": 0,
                         "y": 0,
-                        "width": 8,
+                        "width": 11,
                         "height": 11,
                         "element": {
                           "kind": "ElementReference",
@@ -6486,39 +6559,13 @@
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 8,
+                        "x": 11,
                         "y": 0,
-                        "width": 15,
+                        "width": 11,
                         "height": 11,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-36"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 11,
-                        "width": 8,
-                        "height": 11,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-34"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 8,
-                        "y": 11,
-                        "width": 15,
-                        "height": 11,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-35"
                         }
                       }
                     }
@@ -6530,8 +6577,8 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "Nginx : \"Трафик\"",
-              "collapse": true,
+              "title": "Nginx — Latency (mtail)",
+              "collapse": false,
               "layout": {
                 "kind": "GridLayout",
                 "spec": {
@@ -6545,7 +6592,7 @@
                         "height": 11,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-37"
+                          "name": "panel-59"
                         }
                       }
                     },
@@ -6554,11 +6601,24 @@
                       "spec": {
                         "x": 11,
                         "y": 0,
-                        "width": 12,
+                        "width": 11,
                         "height": 11,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-38"
+                          "name": "panel-60"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 11,
+                        "width": 11,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-61"
                         }
                       }
                     }
@@ -6570,7 +6630,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "Tomcat — \"Потоки\" - Tomcat не показывают нагрузку — запросы идут не через него, а через Nginx → backend (Spring Boot).",
+              "title": "Tomcat \"TCP-Connections\" & \"Потоки-Threads\" - встроенный Tomcat не показывают нагрузку — запросы идут не через него, а через Nginx → backend (Spring Boot).",
               "collapse": true,
               "layout": {
                 "kind": "GridLayout",
@@ -6581,6 +6641,19 @@
                       "spec": {
                         "x": 0,
                         "y": 0,
+                        "width": 24,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-58"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 10,
                         "width": 12,
                         "height": 11,
                         "element": {
@@ -6593,105 +6666,12 @@
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 12,
-                        "y": 0,
+                        "y": 10,
                         "width": 12,
                         "height": 11,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-25"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "kind": "RowsLayoutRow",
-            "spec": {
-              "title": "Tomcat — \"Соединения и сессии\" - Tomcat не показывают нагрузку — запросы идут не через него, а через Nginx → backend (Spring Boot).",
-              "collapse": true,
-              "layout": {
-                "kind": "GridLayout",
-                "spec": {
-                  "items": [
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 0,
-                        "width": 12,
-                        "height": 21,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-26"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 0,
-                        "width": 12,
-                        "height": 10,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-27"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 10,
-                        "width": 12,
-                        "height": 10,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-28"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "kind": "RowsLayoutRow",
-            "spec": {
-              "title": "Tomcat — \"Обработка запросов\" - Tomcat не показывают нагрузку — запросы идут не через него, а через Nginx → backend (Spring Boot).",
-              "collapse": true,
-              "layout": {
-                "kind": "GridLayout",
-                "spec": {
-                  "items": [
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 0,
-                        "width": 12,
-                        "height": 9,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-29"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 0,
-                        "width": 12,
-                        "height": 9,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-30"
                         }
                       }
                     }
@@ -6817,8 +6797,8 @@
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 15,
-                        "y": 11,
+                        "x": 13,
+                        "y": 22,
                         "width": 11,
                         "height": 11,
                         "element": {
@@ -6831,7 +6811,7 @@
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 0,
-                        "y": 22,
+                        "y": 33,
                         "width": 15,
                         "height": 10,
                         "element": {
@@ -7241,6 +7221,99 @@
                 }
               }
             }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Tomcat — \"Обработка запросов. Очереди\" - нагрузка идёт через Nginx → Spring Boot. Nginx сам управляет очередью и сглаживает пики.",
+              "collapse": true,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 3,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-29"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 0,
+                        "width": 12,
+                        "height": 3,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-30"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Tomcat — \"Соединения и сессии\" - stateless API — нет логина, нет сессий. Клиент (k6) не использует JSESSIONID.",
+              "collapse": true,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-26"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 0,
+                        "width": 11,
+                        "height": 5,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-27"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 5,
+                        "width": 11,
+                        "height": 5,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-28"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         ]
       }
@@ -7269,15 +7342,15 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Приложение java",
+    "title": "Стенд нагрузки Nginx/SpringBoot/Postgres",
     "variables": [
       {
         "kind": "QueryVariable",
         "spec": {
           "name": "metris",
           "current": {
-            "text": "simple_java_bridge",
-            "value": "simple_java_bridge"
+            "text": "",
+            "value": ""
           },
           "label": "Источник метрик",
           "hide": "dontHide",
@@ -7311,8 +7384,12 @@
         "spec": {
           "name": "datname",
           "current": {
-            "text": "",
-            "value": ""
+            "text": [
+              "All"
+            ],
+            "value": [
+              "$__all"
+            ]
           },
           "label": "Базы данных",
           "hide": "dontHide",
@@ -7346,11 +7423,9 @@
         "spec": {
           "name": "relname",
           "current": {
-            "text": [
-              "pg_stat_user_tables_table_size_bytes{datname=\"dtbase_1\",instance=\"192.168.0.66:9187\",job=\"postgres_exporter\",relname=\"first_pastman_req\",schemaname=\"public\"}"
-            ],
+            "text": "All",
             "value": [
-              "pg_stat_user_tables_table_size_bytes{datname=\"dtbase_1\",instance=\"192.168.0.66:9187\",job=\"postgres_exporter\",relname=\"first_pastman_req\",schemaname=\"public\"}"
+              "$__all"
             ]
           },
           "label": "Таблицы",

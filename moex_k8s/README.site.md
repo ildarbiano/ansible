@@ -91,6 +91,7 @@ docker inspect k6 | grep -A5 '"PortBindings"'
 docker exec k6 ss -tlnp   #--или netstat -tlnp, если есть утилита
 # Войти внутрь контейнера
 docker exec -it postgres bash   
+docker exec -it nginx sh
 # Посмотреть логи контейнера
 docker logs postgres --tail 20
 docker logs k6 --tail 50

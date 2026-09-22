@@ -509,3 +509,47 @@ curl -k "https://192.168.0.55/api/data/count"
         GitHub	        ?per_page=30&page=1
         Twitter	        ?count=20&cursor=...
         Google	        ?maxResults=10&pageToken=...
+
+# Tomcat settings
+server.tomcat.mbeanregistry.enabled=true
+# Threads — рабочие потоки
+server.tomcat.threads.max=200
+curl -s http://192.168.0.55:8081/actuator/prometheus | grep tomcat_threads
+        Thread — это исполнитель. Он выполняет код: парсит запрос, идёт в БД, формирует ответ.
+        Thread — это как "сотрудник на рабочем месте". Он берёт запрос и обрабатывает его.
+Свойства:
+        Ограничено maxThreads=200
+        Один поток = один активный запрос в момент времени
+        Если все 200 заняты — новые запросы ждут в очереди acceptCount
+# Connections (соединения) — каналы
+server.tomcat.max-connections=8192
+        Connection — это TCP-соединение между клиентом и сервером. Оно может быть открыто, но не обрабатываться прямо сейчас.           
+        Connection — это как "телефонная линия". Линия открыта, но разговор может не идти. 
+Свойства:
+        Ограничено maxConnections=8192
+        Одно соединение может обслуживать много запросов (keep-alive)
+        Соединение может быть idle (открыто, но не используется)
+# Очередь. acceptCount=100	Очередь переполнена → HTTP 503
+server.tomcat.accept-count=100
+На стенде нагрузка идёт через Nginx → Spring Boot, а не напрямую в Tomcat. Nginx сам управляет очередью и сглаживает пики. К тому же, acceptCount становится критичным только когда tomcat_threads_busy уже упирается в 100.
+Nginx	        Tomcat	        Что означает
+active растёт	busy растёт	Nginx передаёт нагрузку на backend
+active растёт	busy = 200	Backend перегружен
+waiting растёт	busy низкий	Клиенты держат соединения
+5xx растёт	busy = 200	Очередь backend переполнена
+Что покажет "очередь" в Nginx:
+1. nginx_connections_active — если растёт, но busy низкий → Nginx держит запросы
+2. nginx_connections_waiting — если растёт → клиенты держат keep-alive
+3. nginx_http_requests_total{status="502"} — если растёт → backend не справляется
+# Сессии. Sessions. HTTP-сессия — это состояние пользователя между запросами. Когда пользователь заходит на сайт, Tomcat создаёт сессию с уникальным ID (JSESSIONID). Все его запросы привязаны к этой сессии.
+┌─────────────────────────────────────────────────────-------------------------------┐
+│  Пользователь (браузер)                                                            │
+│                                                                                    │
+│  1. Заходит на сайт   → Tomcat создаёт Session        #abc                       │
+│  2. Логинится         → Session                       #abc хранит user_id        │
+│  3. Добавляет товар   → Session                       #abc хранит корзину        │
+│  4. Закрывает браузер → Session                       #abc остаётся              │
+│                                                                                    │
+│  activeSessions = 1 (для этого пользователя)                                       │
+└─────────────────────────────────────────────────────-------------------------------
+stateless API — нет логина, нет сессий. Клиент (k6) не использует JSESSIONID. Поэтому:activeSessions = 0 (или близко к 0)
