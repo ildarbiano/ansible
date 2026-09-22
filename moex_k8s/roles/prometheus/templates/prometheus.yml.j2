@@ -24,6 +24,11 @@ scrape_configs:
       - targets:
         - {{ hostvars['k8s']['ansible_host'] }}:9113
 
+  - job_name: 'mtail'
+    static_configs:
+      - targets:
+        - {{ hostvars['k8s']['ansible_host'] }}:3903
+
 {% if false %}
   - job_name: 'jmx_exporter'
     static_configs:

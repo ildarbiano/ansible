@@ -1,0 +1,6 @@
+# roles/mtail/handlers/main.yml
+---
+- name: restart mtail
+  shell: docker restart mtail
+  listen: "restart mtail"
+

@@ -1,0 +1,57 @@
+# roles/nginx/templates/nginx-main.conf.j2
+
+user  nginx;
+worker_processes  auto;
+worker_rlimit_nofile 4096;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  2048;
+    multi_accept on;
+    use epoll;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Стандартный лог
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    # Лог с таймингами для latency
+    log_format  latency_log  '$remote_addr - $remote_user [$time_local] '
+                             '"$request" $status $body_bytes_sent '
+                             'request_time=$request_time '
+                             'upstream_response_time=$upstream_response_time '
+                             'upstream_connect_time=$upstream_connect_time '
+                             'upstream_header_time=$upstream_header_time';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    # Производительность
+    sendfile        on;
+    tcp_nopush      on;
+    tcp_nodelay     on;
+
+    # Keep-alive
+    keepalive_timeout  65;
+    keepalive_requests 100;
+
+    # Кэш файлов
+    open_file_cache max=1000 inactive=60s;
+    open_file_cache_valid 80s;
+    open_file_cache_min_uses 1;
+    open_file_cache_errors on;
+
+    # Gzip
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript;
+    gzip_min_length 1000;
+
+    # Подключаем server-блоки из conf.d
+    include /etc/nginx/conf.d/*.conf;
+}

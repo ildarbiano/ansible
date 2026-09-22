@@ -1,0 +1,59 @@
+# roles/mtail/tasks/main.yml
+---
+- name: Create mtail directory
+  file:
+    path: /opt/mtail
+    state: directory
+    mode: '0755'
+
+- name: Deploy mtail program
+  template:
+    src: nginx_latency.mtail.j2
+    dest: /opt/mtail/nginx_latency.mtail
+    mode: '0644'
+
+- name: Stop and remove existing mtail container if exists
+  shell: |
+    docker stop mtail 2>/dev/null || true
+    docker rm mtail 2>/dev/null || true
+  ignore_errors: yes
+  changed_when: false
+
+- name: Run mtail container
+  shell: |
+    docker run -d \
+      --name mtail \
+      --restart unless-stopped \
+      --network mystand-app-net \
+      -p 3903:3903 \
+      -v /opt/nginx/logs:/logs:ro \
+      -v /opt/mtail:/etc/mtail:ro \
+      --entrypoint /mtail \
+      ghcr.io/jaqx0r/mtail:latest \
+      -progs /etc/mtail \
+      -logs /logs/latency.log \
+      -port 3903 \
+      -emit_prog_label=false \
+      -v=2 \
+      -logtostderr
+  register: docker_run
+  changed_when: docker_run.rc == 0
+
+- name: Wait for mtail to be ready
+  wait_for:
+    port: 3903
+    delay: 5
+    timeout: 30
+    host: "{{ ansible_default_ipv4.address }}"
+
+- name: Display mtail status
+  debug:
+    msg: |
+      ========================================
+      ✅ mtail successfully deployed!
+      ========================================
+      📍 Host: {{ ansible_default_ipv4.address }}
+      🔌 Port: 3903
+      📊 Metrics: http://{{ ansible_default_ipv4.address }}:3903/metrics
+      📁 Logs: /opt/nginx/logs/latency.log
+      ========================================

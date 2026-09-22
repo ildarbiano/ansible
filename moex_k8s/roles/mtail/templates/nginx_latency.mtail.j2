@@ -1,0 +1,24 @@
+# roles/mtail/templates/nginx_latency.mtail.j2
+
+gauge nginx_request_time_seconds
+gauge nginx_upstream_response_time_seconds
+gauge nginx_upstream_connect_time_seconds
+gauge nginx_upstream_header_time_seconds
+counter nginx_requests_total
+
+/request_time=(?P<request_time>[\d.]+)/ {
+    nginx_request_time_seconds = $request_time
+    nginx_requests_total++
+}
+
+/upstream_response_time=(?P<upstream_response_time>[\d.]+)/ {
+    nginx_upstream_response_time_seconds = $upstream_response_time
+}
+
+/upstream_connect_time=(?P<upstream_connect_time>[\d.]+)/ {
+    nginx_upstream_connect_time_seconds = $upstream_connect_time
+}
+
+/upstream_header_time=(?P<upstream_header_time>[\d.]+)/ {
+    nginx_upstream_header_time_seconds = $upstream_header_time
+}
