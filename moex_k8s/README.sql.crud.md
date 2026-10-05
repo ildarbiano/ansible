@@ -97,3 +97,29 @@ EXPLAIN ANALYZE SELECT * FROM first_pastman_req;
 EXPLAIN ANALYZE SELECT * FROM first_pastman_req LIMIT 100;
 # Размер таблицы:
 SELECT pg_size_pretty(pg_total_relation_size('first_pastman_req'));
+
+###### pg_stat_statements:
+расширение PostgreSQL, которое логирует все SQL-запросы и собирает статистику:
+  Сколько раз выполнялся запрос (calls)
+  Сколько времени занял всего (total_exec_time)
+  Сколько в среднем (mean_exec_time)
+  # Если pg_stat_statements не установлен — установи:
+CREATE EXTENSION pg_stat_statements;
+# Список колонок, чтобы всегда видеть, что реально есть в вашей версии:
+\d pg_stat_statements
+# Топ-10 медленных запросов
+SELECT query, calls, total_exec_time, mean_exec_time
+FROM pg_stat_statements
+ORDER BY total_exec_time DESC
+LIMIT 10;
+# Топ по среднему времени (медленные запросы даже при малом числе вызовов):
+SELECT query, calls, mean_exec_time
+FROM pg_stat_statements
+ORDER BY mean_exec_time DESC
+LIMIT 10;
+# покажет ТОЛЬКО запросы к таблице first_pastman_req
+SELECT query, calls, mean_exec_time 
+FROM pg_stat_statements 
+WHERE query LIKE '%first_pastman_req%'
+ORDER BY total_exec_time DESC 
+LIMIT 10;

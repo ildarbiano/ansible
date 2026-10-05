@@ -139,7 +139,8 @@ sudo rm -rf /opt/grafana/data/*
 sudo ls -l /opt/grafana/data/
 ========== Настройка Dashboards =================
 # чтобы искать нужный 
-icurl -s "http://192.168.0.34:9090/api/v1/query?query=node_uname_info" | jq '.data.result[] | "\(.metric.nodename) → \(.metric.instance)"'
+sudo apt install -y jq
+curl -s "http://192.168.0.34:9090/api/v1/query?query=node_uname_info" | jq '.data.result[] | "\(.metric.nodename) → \(.metric.instance)"'
 "973602a97905 → 192.168.0.55:9100"
 "86f843eb5c59 → 192.168.0.44:9100"
 "037628b8c253 → 192.168.0.34:9100"
