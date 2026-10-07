@@ -95,6 +95,8 @@ LIMIT 10;
 # Покажет план запроса
 EXPLAIN ANALYZE SELECT * FROM first_pastman_req;
 EXPLAIN ANALYZE SELECT * FROM first_pastman_req LIMIT 100;
+  Если Seq Scan — не использует индекс.
+  Если Index Only Scan — использует.
 # Размер таблицы:
 SELECT pg_size_pretty(pg_total_relation_size('first_pastman_req'));
 
@@ -107,6 +109,8 @@ SELECT pg_size_pretty(pg_total_relation_size('first_pastman_req'));
 CREATE EXTENSION pg_stat_statements;
 # Список колонок, чтобы всегда видеть, что реально есть в вашей версии:
 \d pg_stat_statements
+# Сбросить pg_stat_statements:
+SELECT pg_stat_statements_reset();
 # Топ-10 медленных запросов
 SELECT query, calls, total_exec_time, mean_exec_time
 FROM pg_stat_statements

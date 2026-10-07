@@ -1,4 +1,4 @@
-########## Создаем playbooks/postgres-inspect.yml
+###### Создаем playbooks/postgres-inspect.yml
 # Запускаем инспекцию
 bash
 ansible-playbook playbooks/postgres-inspect.yml \
@@ -40,10 +40,10 @@ cat playbooks/postgres-delete-dbs.yml | grep postgres_dry_run
       when: not (postgres_dry_run | default(true) | bool)
       when: not (postgres_dry_run | default(true) | bool) and item.changed
 
-bash
-ansible-playbook playbooks/postgres-delete-dbs.yml --vault-password-file ~/.ansible_vault_pass -v
-
 # выполнить реально удаление:
+ansible-playbook playbooks/postgres-delete-dbs.yml \
+--vault-password-file ~/.ansible_vault_pass -v
+
 ansible-playbook playbooks/postgres-delete-dbs.yml \
 --vault-password-file ~/.ansible_vault_pass \
 -e "postgres_dry_run=false" -v
