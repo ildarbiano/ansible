@@ -61,6 +61,10 @@ docker exec -it postgres bash
 psql -U ilya-ansible -d dtbase_1
 # Посмотрим структуру таблицы "first_pastman_req"
 \d public.first_pastman_req
+  # в ответе Индекс на id:
+  Indexes:
+    "first_pastman_req_pkey" PRIMARY KEY, btree (id)
+
 # Размер всей базы dtbase_1:
 SELECT pg_database_size('dtbase_1') / 1024 / 1024 AS size_mb;
 # Размер таблицы first_pastman_req:
@@ -127,3 +131,8 @@ FROM pg_stat_statements
 WHERE query LIKE '%first_pastman_req%'
 ORDER BY total_exec_time DESC 
 LIMIT 10;
+# индекс создание
+             idx_<таблица>_<колонка>
+CREATE INDEX idx_first_pastman_req_data ON first_pastman_req(data);
+CREATE INDEX idx_first_pastman_req_id ON first_pastman_req(id);
+# Индекс — это отдельная структура (обычно B-tree), где хранятся значения колонки + ссылки на строки таблицы, отсортированные. Это не счётчик. Это как алфавитный указатель в книге: чтобы найти слово, ты не читаешь всю книгу, а смотришь в указатель.
