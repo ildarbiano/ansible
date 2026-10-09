@@ -28,6 +28,7 @@
   shell: |
     docker run -d \
       --name prometheus \
+      --restart unless-stopped \
       -p 9090:9090 \
       -v /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro \
       -v /opt/prometheus/data:/prometheus \
