@@ -138,7 +138,7 @@ docker rm  grafana
 sudo rm -rf /opt/grafana/data/*
 sudo ls -l /opt/grafana/data/
 ========== Настройка Dashboards =================
-# чтобы искать нужный 
+# чтобы искать нужный хост по его id
 sudo apt install -y jq
 curl -s "http://192.168.0.34:9090/api/v1/query?query=node_uname_info" | jq '.data.result[] | "\(.metric.nodename) → \(.metric.instance)"'
 "973602a97905 → 192.168.0.55:9100"

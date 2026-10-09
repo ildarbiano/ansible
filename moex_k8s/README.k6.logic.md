@@ -104,7 +104,14 @@ export default function () {
 
   sleep(1);
 }
-
+# В коде:
+const data = http.get(`${baseUrl}/api/data`);
+# Нет параметров — значит, используются дефолты из контроллера:
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "100") int size
+# То есть page=0, size=100. Ты тянешь 100 записей с jsonb на каждый запрос.
+# уменьшить количество записей с jsonb, на каждый запрос. меньше данных — меньше CPU на сериализацию JSON. 
+const data = http.get(`${baseUrl}/api/data?page=0&size=20`);
 # Итоговый Результат
 docker logs k6 --tail 50
 
