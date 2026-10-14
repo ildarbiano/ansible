@@ -562,9 +562,53 @@ waiting растёт	busy низкий	Клиенты держат соедин�
 └─────────────────────────────────────────────────────-------------------------------
 stateless API — нет логина, нет сессий. Клиент (k6) не использует JSESSIONID. Поэтому:activeSessions = 0 (или близко к 0)
 
-# JFR Java Flight Recorder
+##### JFR Java Flight Recorder
 # — встроенный профайлер JVM. Запускается флагом при старте приложения:
 -XX:StartFlightRecording=duration=60s,filename=recording.jfr
 # Или через jcmd на работающем приложении:
-jcmd <PID> JFR.start duration=60s filename=recording.jfr
+jcmd <PID> JFR.start duration=240s filename=recording.jfr
 # Потом открываешь recording.jfr в JDK Mission Control и смотришь, что жрёт CPU.
+# Найди PID Java-процесса внутри контейнере:
+kubectl exec -n <namespace> <pod-name> -- jcmd -l
+sudo docker exec -it backend jcmd -l
+# Ищи 1 (или другой ID) — это PID приложения. В Kubernetes-контейнерах Java обычно имеет PID 1.
+# Запусти запись на 60 секунд:
+kubectl exec -n <namespace> <pod-name> -- jcmd 1 JFR.start duration=240s filename=/tmp/recording.jfr settings=profile
+sudo docker exec -it backend jcmd 1 JFR.start duration=240s filename=/tmp/recording.jfr settings=profile
+sudo docker exec -it backend jcmd 1 JFR.start duration=240s filename=recording.jfr settings=profile
+sudo docker exec -it backend jcmd 1 JFR.start name=myrec duration=240s settings=profile
+sudo docker exec -it backend jcmd 1 JFR.start name=myrec duration=240s settings=profile filename=/tmp/rec.jfr
+# Подай нагрузку в k6.
+# 1. Проверь, что запись создалась внутри контейнера:
+sudo docker exec -it backend ls -l /tmp/recording.jfr
+# 2. Если файл есть — скопируй его на хост:
+kubectl cp <namespace>/<pod-name>:/tmp/recording.jfr ./recording.jfr
+sudo docker cp backend:/tmp/recording.jfr /tmp/recording.jfr
+sudo docker cp backend:/tmp/rec.jfr ./rec.jfr
+-------------------
+# Если файл .jfr пустой
+# Проверь 1. Посмотри статус JFR:
+sudo docker exec -it backend jcmd 1 JFR.check
+# 2. Посмотри логи контейнера:
+sudo docker logs backend --tail 100 | grep -i jfr
+# После окончания нагрузки сделай дамп:
+sudo docker exec -it backend jcmd 1 JFR.dump name=myrec filename=/tmp/rec.jfr
+sudo docker exec -it backend jcmd 1 JFR.dump name=myrec filename=rec.jfr
+---- Затем docker cp backend:/tmp/rec.jfr ./rec.jfr.
+
+#### снять jstack несколько раз подряд.
+# Это не так информативно, как флеймграф, но покажет, в каком месте кода висят потоки. Запусти во время нагрузки:
+for i in 1 2 3 4 5; do
+  sudo docker exec -it backend jcmd 1 Thread.print > /tmp/thread_$i.txt
+  sleep 5
+done
+# Потом посмотри, какие стеки повторяются. Это покажет, где потоки ждут (Hikari, JSON, сеть).
+
+-------------------
+# Проверь, есть ли jcmd внутри контейнера:
+sudo docker exec -it backend which jcmd
+        /opt/java/openjdk/bin/jcmd
+# пересобери образ на:
+        eclipse-temurin:17-jdk-alpine
+# сейчас:
+        eclipse-temurin:17-jre-alpine
