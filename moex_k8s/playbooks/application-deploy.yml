@@ -40,7 +40,7 @@
           -e SPRING_DATASOURCE_USERNAME={{ postgres_user }} \
           -e SPRING_DATASOURCE_PASSWORD={{ vault_postgres_password }} \
           -e SERVER_PORT=8081 \
-          eclipse-temurin:17-jre-alpine \
+          eclipse-temurin:17-jdk-alpine \
           java -jar /app.war
       register: docker_run
       changed_when: docker_run.rc == 0
